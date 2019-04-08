@@ -1,0 +1,29 @@
+.card{
+    display: flex;
+    background: white;
+    position: relative;
+    flex-direction: column;
+    border-radius:5px;
+    padding: 20px;
+    box-shadow: 0 5px 15px -8px rgba(0, 0, 0, 0.24),
+    0 8px 10px -5px rgba(0, 0, 0, 0.2);
+    top:-40px;
+}
+.profile{
+    top: -75px;
+    & .avatar{
+        margin-top:-100px;
+        text-align: center;
+    }
+    & .edit-profile{
+        position:absolute;
+        top: 10vh;
+        right:25px;
+    }
+}
+.background-pic {
+    width: 100%;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    height: 250px;
+}

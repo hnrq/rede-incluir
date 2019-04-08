@@ -1,0 +1,7 @@
+.icon-button{
+    cursor: pointer;
+    &:focus{
+        box-shadow: none;
+        outline: none;
+    }
+}

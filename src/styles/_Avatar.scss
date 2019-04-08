@@ -1,0 +1,18 @@
+.avatar {
+    display: inline-block;
+    width: 160px;
+    height: 160px;
+    max-width: 160px;
+    max-height: 160px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 5px 15px -8px rgba(0, 0, 0, 0.24),
+    0 8px 10px -5px rgba(0, 0, 0, 0.2);
+    &.small {
+        width: 80px;
+        height: 80px;
+    }
+    img { max-width:100%;
+    }
+}
+

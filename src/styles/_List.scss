@@ -1,0 +1,38 @@
+.list-item{
+    display: flex;
+    position: relative;
+    & .list-info{
+        width: 80%;
+        padding-left: 25px;
+    }
+    & .list-item-action{
+        position: absolute;
+        top:0;
+        right: 0;
+    }
+    & h5{
+        font-weight:bold;
+        margin-bottom: 5px;
+    }
+    & h6{
+        font-size:1.1em;
+        font-weight: 400;
+        margin-bottom: 0px;
+    }
+    & span{
+        color:grey;
+        display: block;
+        font-weight: 200;
+        line-height: 1.2em;
+        margin: 0;
+    }
+}
+
+.list{
+    & .list-title {
+        margin-bottom: 25px;
+    }
+    & .icon-button {
+        color: #007bff;
+    }
+}

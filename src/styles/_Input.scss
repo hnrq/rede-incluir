@@ -1,0 +1,33 @@
+/* enable absolute positioning */
+.inner-addon {
+    position: relative;
+
+    & .icon-button {
+        position: absolute;
+        top: 0;
+    }
+    & .is-invalid{
+        background-image: none;
+    }
+}
+
+/* align icon */
+.left-addon {
+    & .icon-button {
+        left: 0px;
+    }
+
+    & input {
+        padding-left: 30px;
+    }
+}
+
+.right-addon {
+    & .icon-button {
+        right: 0px;
+    }
+
+    & input {
+        padding-right: 30px;
+    }
+}
