@@ -4,7 +4,8 @@ import PasswordInput from './custom-bootstrap/PasswordInput';
 import {LinkContainer} from 'react-router-bootstrap';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {startLogin,startLogout} from '../actions';
+import {startLogout} from '../actions';
+import {authenticate} from '../firebase/auth';
 import queryString from 'query-string';
 
 class Header extends Component{
@@ -37,7 +38,9 @@ class Header extends Component{
 
     login = (e) => {
         const {email, password} = this.state ;
-        this.props.login(email, password);
+        authenticate(email, password).then((result) => {
+            this.props.history.push(`/${result.user.uid}`);
+        });
     }
     
     search = (e) => {
@@ -56,14 +59,12 @@ class Header extends Component{
         if(this.props.isLogged)
             return(
                 <Nav style={{width:'100%'}}>
-                <Form inline onSubmit={this.search}>
-                    <Form.Control type="text" value={this.state.searchCriteria} className="mr-sm-2" onChange={this.handleSearchCriteria} placeholder="Search"/>
-                </Form>
-                    <Row>
-                        <Col><Button variant="primary" type="submit" onClick={this.search} className="mr-sm-2" block>Search</Button></Col>
-                    </Row>
+                <Form.Row onSubmit={this.search}>
+                    <Col><Form.Control type="text" value={this.state.searchCriteria} className="mr-sm-2" onChange={this.handleSearchCriteria} placeholder="Search"/></Col>
+                    <Col md={4}><Button variant="primary" type="submit" onClick={this.search} className="mr-sm-2" block>Search</Button></Col>
+                </Form.Row>
                     <Row className="ml-auto">
-                        <Col><Button variant="danger" onClick={this.props.logout} className="ml-auto" block>Logout</Button></Col>
+                        <Col><Button variant="danger" onClick={this.props.logout} block>Logout</Button></Col>
                     </Row>
                 </Nav>
                 );
@@ -81,12 +82,11 @@ class Header extends Component{
 
     render(){
         return(
-            <Navbar bg="light" expand="lg">
+            <Navbar fixed="top" bg="light" expand="lg">
                 <LinkContainer to="/"><Navbar.Brand><b>Rede Incluir</b></Navbar.Brand></LinkContainer>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                        {this.renderForm()}      
-
+                        {this.renderForm()}
                 </Navbar.Collapse>
             </Navbar>
         );
@@ -98,9 +98,6 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    login: (email,password) => {
-        dispatch(startLogin(email,password))
-    },
     logout: () => {
         dispatch(startLogout())
     }

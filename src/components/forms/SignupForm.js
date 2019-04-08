@@ -1,13 +1,18 @@
 import React,{Component} from 'react';
 import {Field, reduxForm} from 'redux-form';
 import {Form,Button,Row,Col} from 'react-bootstrap';
-import { toast } from 'react-toastify';
 import TextField from '../custom-bootstrap/TextField';
+import {signUp} from '../../firebase/auth';
 
 class SignupForm extends Component{
     submit = (values) => {
-        toast.success("Conta criada");
-        console.log(values);
+        const {
+            firstName,
+            lastName,
+            email,
+            password
+        } = values;
+        signUp(firstName, lastName, email, password);
     }
 
     
@@ -47,7 +52,7 @@ class SignupForm extends Component{
                         placeholder = {"Password"}/>
                     </Col>
                 </Row>
-                <Button disabled={submitting} block type="submit" size="lg">Salvar</Button>
+                <Button disabled={submitting} block type="submit" size="lg">Criar conta</Button>
             </Form>
             </div>
             

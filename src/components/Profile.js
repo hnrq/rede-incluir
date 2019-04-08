@@ -1,16 +1,21 @@
 import React,{Component} from 'react';
+import {withRouter} from 'react-router-dom';
+import {getUserInfo,addUserInfo} from '../actions';
+import {connect} from 'react-redux';
 import {Container,Button,Modal} from 'react-bootstrap';
 import placeholder from '../images/ppic-placeholder.jpg';
 import backgroundPlaceholder from '../images/background-placeholder.png';
 import ExperienceForm from './forms/ExperienceForm';
+import EditProfileForm from './forms/EditProfileForm';
 import List from './List';
+import ReactPlaceholder from 'react-placeholder';
 import {GRADUATION} from './ListItem';
 
 const experiences = [
     {
         post:'Estagiário de desenvolvimento',
         company: 'Teknisa',
-        location: 'Belo Horizonte',
+        workLocation: 'Belo Horizonte',
         startDate:{
             month:'0',
             year:2017
@@ -20,7 +25,7 @@ const experiences = [
     {
         post: 'Estagiário de design',
         company: 'DTI',
-        location: 'Belo Horizonte',
+        workLocation: 'Belo Horizonte',
         startDate: {
             month: '8',
             year: 2014
@@ -42,27 +47,47 @@ const graduations = [
     }
 ]
 
-export default class Profile extends Component{
+class Profile extends Component{
     constructor(){
         super();
         this.state = {
-            show:false,
+            showListModal:false,
+            showProfileModal:false,
+            ready:false,
         }
     }
 
-    handleShowModal = () => {
-        this.setState({show: true});
+    handleShowListModal = () => {
+        this.setState({showListModal: true});
     }
 
-    handleCloseModal = () => {
+    handleCloseListModal = () => {
         this.setState({
-            show: false
+            showListModal: false
+        });
+    }
+
+    handleShowProfileModal = () => {
+        this.setState({showProfileModal: true});
+    }
+
+    handleCloseProfileModal = () => {
+        this.setState({
+            showProfileModal: false
+        });
+    }
+
+    componentWillMount(){
+        const {getUserInfo,addUserInfo} = this.props;
+        getUserInfo().then((doc) => {
+            addUserInfo(doc.val());
+            this.setState({ready:true});
         });
     }
 
     addExperience = () => {
         this.setState({editMode: false,initialValues:null});
-        this.handleShowModal();
+        this.handleShowListModal();
     }
 
     editExperience = (experience) => {
@@ -74,40 +99,76 @@ export default class Profile extends Component{
             endMonth: (experience.endDate ? experience.endDate.month : null),
         }});
         console.log(experience);
-        this.handleShowModal();
+        this.handleShowListModal();
+    }
+
+
+    renderExperiences(){
+        if(this.state.ready){
+            return(
+                <Container className="card experiences">
+                    <List title={"Experiências"} items={this.props.experiences} listActionOnClick={this.addExperience} itemOnClick={this.editExperience}/>
+                    <List title={"Formação acadêmica"} items={graduations} listActionOnClick={this.addExperience} type={GRADUATION} itemOnClick={this.editExperience}/>
+                </Container>
+            )
+        }
     }
 
     render(){
-        const {profilePic,backgroundPic} = this.props;
+        const {profilePic,backgroundPic,location,firstName,lastName,workLocation,occupation,desc} = this.props;
         return(
             <>
-            <div className="background-pic" style={{background:`url(${backgroundPic ? backgroundPic : backgroundPlaceholder})`,backgroundPosition:'center'}}></div>
+            <ReactPlaceholder type='rect' style={{width:'100%',height: '250px'}} showLoadingAnimation={true} ready={this.state.ready}>
+                <div className="background-pic" style={{background:`url(${backgroundPic ? backgroundPic : backgroundPlaceholder})`,backgroundPosition:'center'}}></div>
+            </ReactPlaceholder>
             <Container className="card profile">
                     <div className="avatar">
-                        <img alt="profile-pic" src={profilePic ? profilePic : placeholder}/>
+                        <ReactPlaceholder type='round' showLoadingAnimation={true} ready={this.state.ready} style={{width:160,height: 160}}>
+                            <img alt="profile-pic" src={profilePic ? profilePic : placeholder}/>
+                        </ReactPlaceholder>
                     </div>
                     <div className="info">
                         <div className="title">
-                            <h2 style={{fontWeight:'bold'}}>Ronaldo</h2>
+                            <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={this.state.ready} style={{width:170,height:30}}>
+                                <h3 style={{fontWeight:'bold'}}>{firstName ? firstName + " " + lastName : 'Ronaldo'}</h3>
+                            </ReactPlaceholder>
                         </div>
-                        <h5 className="occupation">Camisa 9</h5>
-                        <p className="location">Rio de Janeiro, RJ e região</p>
-                        <Button className="edit-profile">Editar Perfil</Button>
+                        <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={this.state.ready} style={{width:250,height:20}}>
+                            <h5 className="occupation">{occupation}</h5>
+                        </ReactPlaceholder>
+                        <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={this.state.ready} style={{width:250,height:20}}>
+                            <p className="location">{workLocation}</p>
+                        </ReactPlaceholder>
+                        {location.pathname.substr(1) === this.props.uid && this.state.ready ? <Button className="edit-profile" onClick={this.handleShowProfileModal}>Editar Perfil</Button> : null}
                         <hr/>
                         <div className="desc" style={{textAlign:'justify'}}>
-                            <p> Ronaldo Luís Nazário de Lima, mais conhecido como Ronaldo, Ronaldo Fenômeno ou ainda Ronaldinho(Rio de Janeiro, 22 de setembro de 1976), é um empresário e ex - futebolista brasileiro que atuava como atacante, amplamente reconhecido como um dos melhores futebolistas de todos os tempos.Atualmente, trabalha como comentarista da Rede Globo.</p>
+                            <ReactPlaceholder type='text' rows={8} showLoadingAnimation={true} ready={this.state.ready} style={{height:200}}>
+                                {desc ? <p>{desc}</p> : <i style={{color:'grey',textAlign:'center',margin:'50px 0px',display:'block'}}>Nenhuma descrição</i>}
+                            </ReactPlaceholder>
                         </div>
                     </div>
             </Container>
-            <Container className="card experiences">
-                <List title={"Experiências"} items={experiences} listActionOnClick={this.addExperience} itemOnClick={this.editExperience}/>
-                <List title={"Formação acadêmica"} items={graduations} listActionOnClick={this.addExperience} type={GRADUATION} itemOnClick={this.editExperience}/>
-            </Container>
-            <Modal show={this.state.show} onHide={this.handleCloseModal}>
-                <ExperienceForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseModal}/>
+            {this.renderExperiences()}
+            <Modal show={this.state.showListModal} onHide={this.handleCloseListModal}>
+                <ExperienceForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseListModal}/>
+            </Modal>
+            <Modal show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
+                <Container style={{padding:'25px'}}><EditProfileForm initialValues={{firstName,lastName,workLocation,occupation,desc}} closeModal={this.handleCloseProfileModal}/></Container>
             </Modal>
             </>
             
         )
     }
 }
+
+const mapStateToProps = (state, ownProps) => ({
+    ...state.userInfo,
+    uid: state.auth.user ? state.auth.user.uid : null
+});
+
+const mapDispatchToProps = (dispatch,ownProps) => ({
+    getUserInfo: () => dispatch(getUserInfo(ownProps.location.pathname.substr(1))),
+    addUserInfo: (data) => dispatch(addUserInfo(data))
+});
+
+export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Profile));

@@ -26,6 +26,9 @@ export default class TextField extends Component{
                     as='select' { ...this.props }>
                         {this.props.children}
                     </Form.Control>);
+        } else if(type === 'textarea'){
+            return (<Form.Control isInvalid={!!validationState} { ...input }
+                    as='textarea' { ...this.props } rows={4}/>);
         } else{
              return (<Form.Control isInvalid={!!validationState} { ...input }
                     type={ type }

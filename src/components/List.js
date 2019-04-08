@@ -6,7 +6,7 @@ import {Row,Col} from 'react-bootstrap';
 
 export default class List extends Component{
     render(){
-        const {items,title,listActionOnClick,itemOnClick,type} = this.props;
+        const {title,listActionOnClick,itemOnClick,type,items} = this.props;
         return(
             <div className="list">
                 <Row>
@@ -16,7 +16,7 @@ export default class List extends Component{
                     icon={faPlus}
                     /></i></Col>
                 </Row>
-                {items.map((item,index) => <ListItem {...item} key={index} itemOnClick={itemOnClick} type={type}/>)}
+                { !!items ? Object.entries(items).map((item) => <ListItem {...item[1]} key={item[0]} itemOnClick={itemOnClick} type={type}/>) : <i>Lista Vazia</i>}
                 <hr/>
             </div>
         )

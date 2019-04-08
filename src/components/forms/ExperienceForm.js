@@ -2,15 +2,40 @@ import React,{Component} from 'react';
 import {Field, reduxForm,formValueSelector} from 'redux-form';
 import {Form,Button,Row,Col,Container} from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import {addExperienceInfo} from '../../actions';
+import {addExperience} from '../../firebase/queries';
 import {connect} from 'react-redux';
 import TextField from '../custom-bootstrap/TextField';
 
 class ExperienceForm extends Component{
 
     submit = (values) => {
-        const {editMode,closeModal} = this.props;
-        editMode ? toast.success("Editado com sucesso") : toast.success("Adicionado com sucesso");
-        console.log(values);
+        const {editMode,closeModal,uid,addExperienceInfo} = this.props;
+        debugger;
+        const data = {
+            ...values,
+            startDate: {
+                'month': values.startMonth ? values.startMonth : 0,
+                'year': values.startYear,
+            },
+            endDate: {
+                'month': values.endMonth ? values.endMonth : 0,
+                'year': values.endYear ? values.endYear : 0,
+            },
+            startMonth: null,
+            startYear: null,
+            endMonth: null,
+            endYear: null,
+        }
+        if(editMode){
+            toast.success("Editado com sucesso");
+        } else{
+            addExperience(data,uid).then((result)=>{
+                debugger;
+                addExperienceInfo(data, uid);
+                toast.success("Adicionado com sucesso");
+            })
+        }
         closeModal();
     }
 
@@ -39,7 +64,7 @@ class ExperienceForm extends Component{
                 </Row>
                 <Row>
                     <Col>
-                    <Field name="location"
+                    <Field name="workLocation"
                         component = {TextField}
                         type="text"
                         placeholder = {"Localidade"}/>
@@ -59,18 +84,18 @@ class ExperienceForm extends Component{
                         component={TextField}
                         type="select"
                         label={'Data de inicio'}>
-                            <option value="0">Jan</option>
-                            <option value="1">Fev</option>
-                            <option value="2">Mar</option>
-                            <option value="3">Abr</option>
-                            <option value="4">Mai</option>
-                            <option value="5">Jun</option>
-                            <option value="6">Jul</option>
-                            <option value="7">Ago</option>
-                            <option value="8">Set</option>
-                            <option value="9">Out</option>
-                            <option value="10">Nov</option>
-                            <option value="11">Dez</option>
+                            <option value="1">Jan</option>
+                            <option value="2">Fev</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Abr</option>
+                            <option value="5">Mai</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Ago</option>
+                            <option value="9">Set</option>
+                            <option value="10">Out</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dez</option>
                         </Field>
                     </Col>
                     {
@@ -80,18 +105,18 @@ class ExperienceForm extends Component{
                                 component={TextField}
                                 type="select"
                                 label={'Data de término'}>
-                                    <option value="0">Jan</option>
-                                    <option value="1">Fev</option>
-                                    <option value="2">Mar</option>
-                                    <option value="3">Abr</option>
-                                    <option value="4">Mai</option>
-                                    <option value="5">Jun</option>
-                                    <option value="6">Jul</option>
-                                    <option value="7">Ago</option>
-                                    <option value="8">Set</option>
-                                    <option value="9">Out</option>
-                                    <option value="10">Nov</option>
-                                    <option value="11">Dez</option>
+                                    <option value="1">Jan</option>
+                                    <option value="2">Fev</option>
+                                    <option value="3">Mar</option>
+                                    <option value="4">Abr</option>
+                                    <option value="5">Mai</option>
+                                    <option value="6">Jun</option>
+                                    <option value="7">Jul</option>
+                                    <option value="8">Ago</option>
+                                    <option value="9">Set</option>
+                                    <option value="10">Out</option>
+                                    <option value="11">Nov</option>
+                                    <option value="12">Dez</option>
                                 </Field>
                             </Col>
                         )
@@ -133,18 +158,23 @@ const validate = values => {
     const errors = {};
     if(!values.post) errors.post = 'Campo Obrigatório';
     if(!values.company) errors.company = 'Campo Obrigatório';
-    if(!values.location) errors.location = 'Campo Obrigatório';
+    if(!values.workLocation) errors.workLocation = 'Campo Obrigatório';
     return errors;
 }
 
 const selector = formValueSelector('experience');
 
+const mapDispatchToProps = (dispatch,ownProps) => ({
+    addExperienceInfo: (experience,uid) => dispatch(addExperienceInfo(experience,uid))
+});
+
 export default connect(state => {
     const isCurrentWork = selector(state,'isCurrentWork');
     return {
-        isCurrentWork
+        isCurrentWork,
+        uid: state.auth.user.uid
     };
-})(reduxForm({
+},mapDispatchToProps)(reduxForm({
     form: 'experience',
     validate
 })(ExperienceForm));

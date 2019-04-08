@@ -15,7 +15,7 @@ export default class ListItem extends Component{
                 "Jul", "Ago", "Set",
                 "Out", "Nov", "Dez"
             ];
-            return `${monthNames[dateObject.month]} de ${dateObject.year}`
+            return `${monthNames[dateObject.month-1]} de ${dateObject.year}`
         } else return dateObject.year;
     }
 
@@ -26,7 +26,7 @@ export default class ListItem extends Component{
                 company,
                 startDate,
                 endDate,
-                location,
+                workLocation,
                 isCurrentWork,
                 type, itemOnClick,
             } = this.props;
@@ -37,7 +37,7 @@ export default class ListItem extends Component{
                 <h5>{type === GRADUATION ? institution : post}</h5>
                 <h6 className="subtitle">{type === GRADUATION ? `${graduation}, ${area}` : company}</h6>
                 <span className="date">{`${this.getShortDate(startDate)} - ${isCurrentWork ? 'Até o momento' : this.getShortDate(endDate)}`}</span>
-                <span className="location">{location}</span>
+                <span className="location">{workLocation}</span>
                 <i className = "btn icon-button list-item-action"
                     onClick = {!!itemOnClick ? () => {itemOnClick(this.props)} : null} > < FontAwesomeIcon
                     icon={faPencilAlt}

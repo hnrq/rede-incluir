@@ -11,19 +11,33 @@
 }
 .profile{
     top: -75px;
+    display: flex;
+    justify-items: center;
+    align-items: center;
     & .avatar{
         margin-top:-100px;
         text-align: center;
     }
+    & .location,h3,h5{
+        text-align: center;
+    }
     & .edit-profile{
         position:absolute;
-        top: 10vh;
+        top: 3vh;
         right:25px;
     }
 }
+
+@media(max-width:480px) {
+    .profile{
+        text-align:center;
+        .edit-profile {
+            position: initial;
+        }
+    }
+}
+
 .background-pic {
     width: 100%;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
     height: 250px;
 }
