@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {withRouter} from 'react-router-dom';
-import {getUserInfo,addUserInfo} from '../actions';
 import {connect} from 'react-redux';
+import {getUserInfo} from '../actions';
 import {Container,Button,Modal} from 'react-bootstrap';
 import placeholder from '../images/ppic-placeholder.jpg';
 import backgroundPlaceholder from '../images/background-placeholder.png';
@@ -10,32 +10,6 @@ import EditProfileForm from './forms/EditProfileForm';
 import List from './List';
 import ReactPlaceholder from 'react-placeholder';
 import {GRADUATION} from './ListItem';
-
-const experiences = [
-    {
-        post:'Estagiário de desenvolvimento',
-        company: 'Teknisa',
-        workLocation: 'Belo Horizonte',
-        startDate:{
-            month:'0',
-            year:2017
-        },
-        isCurrentWork:true,
-    },
-    {
-        post: 'Estagiário de design',
-        company: 'DTI',
-        workLocation: 'Belo Horizonte',
-        startDate: {
-            month: '8',
-            year: 2014
-        },
-        endDate: {
-            month: '0',
-            year: 2017
-        },
-    }
-]
 
 const graduations = [
     {
@@ -48,8 +22,8 @@ const graduations = [
 ]
 
 class Profile extends Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             showListModal:false,
             showProfileModal:false,
@@ -78,11 +52,10 @@ class Profile extends Component{
     }
 
     componentWillMount(){
-        const {getUserInfo,addUserInfo} = this.props;
-        getUserInfo().then((doc) => {
-            addUserInfo(doc.val());
+        const {getUserInfo} = this.props;
+        getUserInfo().then((result)=>{
             this.setState({ready:true});
-        });
+        })
     }
 
     addExperience = () => {
@@ -167,8 +140,7 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 const mapDispatchToProps = (dispatch,ownProps) => ({
-    getUserInfo: () => dispatch(getUserInfo(ownProps.location.pathname.substr(1))),
-    addUserInfo: (data) => dispatch(addUserInfo(data))
+    getUserInfo: () => dispatch(getUserInfo(ownProps.location.pathname.substr(1)))
 });
 
 export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Profile));

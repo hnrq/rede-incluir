@@ -2,8 +2,8 @@ import React,{Component} from 'react';
 import {withRouter} from 'react-router-dom';
 
 class Search extends Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             searchCriteria: ''
         }

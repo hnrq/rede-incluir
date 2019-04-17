@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 
 export default class PasswordInput extends Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             isVisible: false
         }

@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.scss'
 import {createBrowserHistory} from 'history';
 import "react-placeholder/lib/reactPlaceholder.css";
+import 'rc-slider/assets/index.css';
 
 
 const history = createBrowserHistory();
@@ -21,6 +22,7 @@ toast.configure()
 firebaseAuth.onAuthStateChanged((user) => {
     if (user){
       store.dispatch(actions.login(user));
+      history.push(`/${user.uid}`);
     } 
     else{ 
       store.dispatch(actions.logout());

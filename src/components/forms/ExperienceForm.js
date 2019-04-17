@@ -11,7 +11,6 @@ class ExperienceForm extends Component{
 
     submit = (values) => {
         const {editMode,closeModal,uid,addExperienceInfo} = this.props;
-        debugger;
         const data = {
             ...values,
             startDate: {
@@ -22,17 +21,16 @@ class ExperienceForm extends Component{
                 'month': values.endMonth ? values.endMonth : 0,
                 'year': values.endYear ? values.endYear : 0,
             },
-            startMonth: null,
-            startYear: null,
-            endMonth: null,
-            endYear: null,
+            startMonth: undefined,
+            startYear: undefined,
+            endMonth: undefined,
+            endYear: undefined,
         }
         if(editMode){
             toast.success("Editado com sucesso");
         } else{
             addExperience(data,uid).then((result)=>{
-                debugger;
-                addExperienceInfo(data, uid);
+                addExperienceInfo(data, result.key);
                 toast.success("Adicionado com sucesso");
             })
         }
@@ -51,6 +49,7 @@ class ExperienceForm extends Component{
                         <Field name="post"
                         type = 'text'
                         component = {TextField}
+                        label = {"Cargo"}
                         placeholder = {"Cargo"}/>
                     </Col>
                 </Row>
@@ -59,6 +58,7 @@ class ExperienceForm extends Component{
                     <Field name="company"
                         type = 'text'
                         component = {TextField}
+                        label = {"Empresa"}
                         placeholder = {"Empresa"}/>
                     </Col>
                 </Row>
@@ -67,6 +67,7 @@ class ExperienceForm extends Component{
                     <Field name="workLocation"
                         component = {TextField}
                         type="text"
+                        label = {"Localidade"}
                         placeholder = {"Localidade"}/>
                     </Col>
                 </Row>
@@ -125,6 +126,7 @@ class ExperienceForm extends Component{
                 <Row>
                     <Col>
                     <Field name="startYear"
+                        placeholder="Ano inicial"
                         component={TextField}
                         type="number" normalize={normalizeYear}/>
                     </Col>
@@ -132,6 +134,7 @@ class ExperienceForm extends Component{
                         !isCurrentWork && (
                         <Col>
                         <Field name="endYear"
+                            placeholder="Ano final"
                             component={TextField}
                             type="number" normalize={normalizeYear}/>
                         </Col>)
@@ -156,9 +159,10 @@ const normalizeYear = (value, previousValue) => {
 
 const validate = values => {
     const errors = {};
-    if(!values.post) errors.post = 'Campo Obrigatório';
-    if(!values.company) errors.company = 'Campo Obrigatório';
-    if(!values.workLocation) errors.workLocation = 'Campo Obrigatório';
+    if(!values.post) errors.post = 'Campo obrigatório.';
+    if(!values.company) errors.company = 'Campo obrigatório.';
+    if(!values.workLocation) errors.workLocation = 'Campo obrigatório.';
+    if(!values.startYear) errors.startYear = 'Campo obrigatório.'
     return errors;
 }
 

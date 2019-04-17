@@ -1,19 +1,15 @@
-import React,{Component} from 'react';
-import {Field, reduxForm} from 'redux-form';
-import {Form,Button,Row,Col} from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import { addUserInfo } from '../../actions';
-import { editProfile } from '../../firebase/queries';
-import { connect } from 'react-redux';
-import TextField from '../custom-bootstrap/TextField';
+import React,{Component} from "react";
+import {Field, reduxForm} from "redux-form";
+import {Form,Button,Row,Col} from "react-bootstrap";
+import { startEditUserInfo } from "../../actions";
+import { connect } from "react-redux";
+import TextField from "../custom-bootstrap/TextField";
+import Avatar from "../custom-bootstrap/Avatar";
 
 class EditProfileForm extends Component{
     submit = (values) => {
-        editProfile(values,this.props.uid).then((result) => {
-            this.props.addUserInfo(values);
-            if(this.props.closeModal) this.props.closeModal();
-            toast.success('Perfil editado com sucesso');
-        });
+        this.props.editUserInfo(values);
+        if (this.props.closeModal) this.props.closeModal();
     }
 
     render(){
@@ -22,40 +18,53 @@ class EditProfileForm extends Component{
             <Form onSubmit={handleSubmit(this.submit)}>
             <h1>Editar Perfil</h1>
             <Row>
-                <Col>
-                    <Field name = "firstName"
-                    type = 'text'
-                    component = {TextField}
-                    placeholder = {"Nome"}/>
+                <Col sm={5} className="justify-content-md-center">
+                    <Field
+                        name="profilePic"
+                        component={Avatar}
+                        width={180} height={180}
+                        label ={"Foto de perfil"}
+                        placeholder={"Foto de perfil"}
+                        withPreview
+                    />
                 </Col>
-                <Col>
-                    <Field name = "lastName"
-                    type = 'text'
+                <Col  sm={7}>
+                    <Field name = "firstName"
+                    type = "text"
                     component = {TextField}
+                    label  = {"Nome"}
+                    placeholder = {"Nome"}/>
+                    <Field name = "lastName"
+                    type = "text"
+                    component = {TextField}
+                    label  = {"Sobrenome"}
                     placeholder = {"Sobrenome"}/>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <Field name = "occupation"
-                    type = 'text'
+                    type = "text"
                     component = {TextField}
+                    label  = {"Profissão"}
                     placeholder = {"Profissão"}/>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <Field name = "workLocation"
-                    type = 'text'
+                    type = "text"
                     component = {TextField}
+                    label  = {"Local de trabalho"}
                     placeholder = {"Local de trabalho"}/>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <Field name = "desc"
-                    type = 'textarea'
+                    type = "textarea"
                     component = {TextField}
+                    label  = {"Descrição"}
                     placeholder = {"Descrição"}/>
                 </Col>
             </Row>
@@ -69,12 +78,20 @@ const mapStateToProps = (state,ownProps) => ({
     uid: state.auth.user.uid
 });
 
-const mapDispatchToProps = (dispatch,ownProps) => ({
-    addUserInfo: (userInfo) => {
-        dispatch(addUserInfo(userInfo))
-    }
+const mapDispatchToProps = (dispatch) => ({
+    editUserInfo: (userInfo) => {
+        dispatch(startEditUserInfo(userInfo))
+    },
 });
 
+const validate = values => {
+    const errors = {}
+    if (!values.firstName) errors.firstName = 'Campo obrigatório.';
+    if (!values.lastName) errors.lastName = 'Campo obrigatório.';
+    return errors;
+}
+
 export default connect(mapStateToProps, mapDispatchToProps)(reduxForm({
-    form: 'editProfile'
+    form: "editProfile",
+    validate
 })(EditProfileForm));

@@ -9,8 +9,8 @@ import {authenticate} from '../firebase/auth';
 import queryString from 'query-string';
 
 class Header extends Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             searchCriteria: '',
             email: '',
@@ -38,9 +38,7 @@ class Header extends Component{
 
     login = (e) => {
         const {email, password} = this.state ;
-        authenticate(email, password).then((result) => {
-            this.props.history.push(`/${result.user.uid}`);
-        });
+        authenticate(email, password);
     }
     
     search = (e) => {
