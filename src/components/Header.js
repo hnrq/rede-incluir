@@ -52,6 +52,10 @@ class Header extends Component{
         })
     }
     
+    logout = (e) => {
+        e.preventDefault();
+        this.props.logout(() => this.props.history.push('/'));
+    }
 
     renderForm = () => {
         if(this.props.isLogged)
@@ -62,7 +66,7 @@ class Header extends Component{
                     <Col md={4}><Button variant="primary" type="submit" onClick={this.search} className="mr-sm-2" block>Search</Button></Col>
                 </Form.Row>
                     <Row className="ml-auto">
-                        <Col><Button variant="danger" onClick={this.props.logout} block>Logout</Button></Col>
+                        <Col><Button variant="danger" onClick={this.logout} block>Logout</Button></Col>
                     </Row>
                 </Nav>
                 );
@@ -96,8 +100,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    logout: () => {
-        dispatch(startLogout())
+    logout: (callback) => {
+        dispatch(startLogout(callback))
     }
 })
 

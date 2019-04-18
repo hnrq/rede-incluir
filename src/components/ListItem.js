@@ -28,7 +28,7 @@ export default class ListItem extends Component{
                 endDate,
                 workLocation,
                 isCurrentWork,
-                type, itemOnClick,
+                type, action
             } = this.props;
         return(
             <div className="list-item">
@@ -38,10 +38,10 @@ export default class ListItem extends Component{
                 <h6 className="subtitle">{type === GRADUATION ? `${graduation}, ${area}` : company}</h6>
                 <span className="date">{`${this.getShortDate(startDate)} - ${isCurrentWork ? 'Até o momento' : this.getShortDate(endDate)}`}</span>
                 <span className="location">{workLocation}</span>
-                <i className = "btn icon-button list-item-action"
-                    onClick = {!!itemOnClick ? () => {itemOnClick(this.props)} : null} > < FontAwesomeIcon
+                {action ? <i className = "btn icon-button list-item-action"
+                    onClick = {!!action ? () => {action({...this.props,action:null})} : null} > < FontAwesomeIcon
                     icon={faPencilAlt}
-                    /></i>
+                    /></i> : null}
                 <hr/>
             </div>
             </div>

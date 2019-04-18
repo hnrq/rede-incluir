@@ -1,10 +1,10 @@
-import {ADD_USER_INFO,ADD_EXPERIENCE_INFO,ADD_PROFILE_PICTURE} from "../actions/types";
+import {ADD_USER_INFO,ADD_EXPERIENCE,ADD_PROFILE_PICTURE} from "../actions/types";
 
 export default function userInfoReducer(state = {}, action) {
     switch (action.type) {
         case ADD_USER_INFO:
         return {...state,...action.payload};
-        case ADD_EXPERIENCE_INFO:
+        case ADD_EXPERIENCE:
             return {...state,
             experiences:{
                 ...state.experiences,

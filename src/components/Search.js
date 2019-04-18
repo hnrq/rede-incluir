@@ -1,4 +1,5 @@
 import React,{Component} from 'react';
+import {Container} from 'react-bootstrap';
 import {withRouter} from 'react-router-dom';
 
 class Search extends Component{
@@ -14,7 +15,11 @@ class Search extends Component{
         this.setState({searchCriteria:decodeURI(values.query)});
     }
     render(){
-        return <h1>Resultados para {this.state.searchCriteria}</h1>
+        return(
+            <Container style={{marginTop:'50px'}}>
+                <h1>Resultados para {this.state.searchCriteria}</h1>
+            </Container>
+        ) 
     }
 }
 

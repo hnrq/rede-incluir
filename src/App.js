@@ -22,12 +22,10 @@ toast.configure()
 firebaseAuth.onAuthStateChanged((user) => {
     if (user){
       store.dispatch(actions.login(user));
-      history.push(`/${user.uid}`);
+      if(history.location.pathname === '/')
+        history.push(`/${user.uid}`);
     } 
-    else{ 
-      store.dispatch(actions.logout());
-      history.push('/');
-    }
+    else store.dispatch(actions.logout());
 });
 
 class App extends Component {

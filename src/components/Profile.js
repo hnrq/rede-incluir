@@ -25,19 +25,20 @@ class Profile extends Component{
     constructor(props){
         super(props);
         this.state = {
-            showListModal:false,
+            showExperienceModal:false,
             showProfileModal:false,
             ready:false,
         }
+        props.getUserInfo(this.loadingReady);
     }
 
-    handleShowListModal = () => {
-        this.setState({showListModal: true});
+    handleShowExperienceModal = () => {
+        this.setState({showExperienceModal: true});
     }
 
-    handleCloseListModal = () => {
+    handleCloseExperienceModal = () => {
         this.setState({
-            showListModal: false
+            showExperienceModal: false
         });
     }
 
@@ -51,16 +52,13 @@ class Profile extends Component{
         });
     }
 
-    componentWillMount(){
-        const {getUserInfo} = this.props;
-        getUserInfo().then((result)=>{
-            this.setState({ready:true});
-        })
+    loadingReady = () => {
+        this.setState({ready: true});
     }
 
     addExperience = () => {
         this.setState({editMode: false,initialValues:null});
-        this.handleShowListModal();
+        this.handleShowExperienceModal();
     }
 
     editExperience = (experience) => {
@@ -71,24 +69,41 @@ class Profile extends Component{
             endYear: (experience.endDate ? experience.endDate.year : null),
             endMonth: (experience.endDate ? experience.endDate.month : null),
         }});
-        console.log(experience);
-        this.handleShowListModal();
+        this.handleShowExperienceModal();
+    }
+
+    addGraduation = () => {
+        this.setState({editMode: false,initialValues:null});
+        this.handleShowExperienceModal();
+    }
+
+    editExperience = (experience) => {
+        this.setState({editMode: true,initialValues:{
+            ...experience,
+            startMonth: experience.startDate.month,
+            startYear: experience.startDate.year,
+            endYear: (experience.endDate ? experience.endDate.year : null),
+            endMonth: (experience.endDate ? experience.endDate.month : null),
+        }});
+        this.handleShowExperienceModal();
     }
 
 
-    renderExperiences(){
+    renderLists(isEditable){
         if(this.state.ready){
             return(
                 <Container className="card experiences">
-                    <List title={"Experiências"} items={this.props.experiences} listActionOnClick={this.addExperience} itemOnClick={this.editExperience}/>
-                    <List title={"Formação acadêmica"} items={graduations} listActionOnClick={this.addExperience} type={GRADUATION} itemOnClick={this.editExperience}/>
+                    <List title={"Experiências"}  items={this.props.experiences} listAction={isEditable ? this.addExperience : null} listItemAction={isEditable ? this.editExperience : null}/>
+                    <List title={"Formação acadêmica"} items={graduations} listAction={isEditable ? this.addGraduation : null} type={GRADUATION} listItemAction={isEditable ? this.editGraduation : null}/>
                 </Container>
             )
         }
     }
 
     render(){
-        const {profilePic,backgroundPic,location,firstName,lastName,workLocation,occupation,desc} = this.props;
+        const {profilePic,backgroundPic,firstName,lastName,workLocation,occupation,desc} = this.props;
+        const {ready} = this.state;
+        const editable = this.props.location.pathname.substr(1) === this.props.uid;
         return(
             <>
             <ReactPlaceholder type='rect' style={{width:'100%',height: '250px'}} showLoadingAnimation={true} ready={this.state.ready}>
@@ -112,7 +127,7 @@ class Profile extends Component{
                         <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={this.state.ready} style={{width:250,height:20}}>
                             <p className="location">{workLocation}</p>
                         </ReactPlaceholder>
-                        {location.pathname.substr(1) === this.props.uid && this.state.ready ? <Button className="edit-profile" onClick={this.handleShowProfileModal}>Editar Perfil</Button> : null}
+                        {editable && ready ? <Button className="edit-profile" onClick={this.handleShowProfileModal}>Editar Perfil</Button> : null}
                         <hr/>
                         <div className="desc" style={{textAlign:'justify'}}>
                             <ReactPlaceholder type='text' rows={8} showLoadingAnimation={true} ready={this.state.ready} style={{height:200}}>
@@ -121,12 +136,15 @@ class Profile extends Component{
                         </div>
                     </div>
             </Container>
-            {this.renderExperiences()}
-            <Modal show={this.state.showListModal} onHide={this.handleCloseListModal}>
-                <ExperienceForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseListModal}/>
+            {this.renderLists(editable)}
+            <Modal show={this.state.showExperienceModal} onHide={this.handleCloseExperienceModal}>
+                <ExperienceForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseExperienceModal}/>
+            </Modal>
+            <Modal show={this.showGraduationModal} onHide={this.handleCloseGraduationModal}>
+                <ExperienceForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseGraduationModal}/>
             </Modal>
             <Modal show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
-                <Container style={{padding:'25px'}}><EditProfileForm initialValues={{firstName,lastName,workLocation,occupation,desc}} closeModal={this.handleCloseProfileModal}/></Container>
+                <EditProfileForm initialValues={{firstName,lastName,workLocation,occupation,desc,profilePic}} closeModal={this.handleCloseProfileModal}/>
             </Modal>
             </>
             
@@ -140,7 +158,7 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 const mapDispatchToProps = (dispatch,ownProps) => ({
-    getUserInfo: () => dispatch(getUserInfo(ownProps.location.pathname.substr(1)))
+    getUserInfo: (ready) => dispatch(getUserInfo(ownProps.location.pathname.substr(1),ready))
 });
 
 export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Profile));

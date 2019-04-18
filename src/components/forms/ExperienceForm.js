@@ -1,16 +1,15 @@
 import React,{Component} from 'react';
 import {Field, reduxForm,formValueSelector} from 'redux-form';
-import {Form,Button,Row,Col,Container} from 'react-bootstrap';
+import {Form,Button,Row,Col,Modal} from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import {addExperienceInfo} from '../../actions';
-import {addExperience} from '../../firebase/queries';
+import {startAddExperience,startEditExperience} from '../../actions';
 import {connect} from 'react-redux';
 import TextField from '../custom-bootstrap/TextField';
 
 class ExperienceForm extends Component{
 
     submit = (values) => {
-        const {editMode,closeModal,uid,addExperienceInfo} = this.props;
+        const {editMode,closeModal,startAddExperience,startEditExperience} = this.props;
         const data = {
             ...values,
             startDate: {
@@ -21,29 +20,32 @@ class ExperienceForm extends Component{
                 'month': values.endMonth ? values.endMonth : 0,
                 'year': values.endYear ? values.endYear : 0,
             },
-            startMonth: undefined,
-            startYear: undefined,
-            endMonth: undefined,
-            endYear: undefined,
         }
-        if(editMode){
-            toast.success("Editado com sucesso");
-        } else{
-            addExperience(data,uid).then((result)=>{
-                addExperienceInfo(data, result.key);
-                toast.success("Adicionado com sucesso");
-            })
-        }
+        delete data.id;
+        delete data.startMonth;
+        delete data.startYear;
+        delete data.endMonth;
+        delete data.endYear;
+        delete data.type;
+
+        if(editMode)
+            startEditExperience(data,values.id).then(() => 
+            toast.success("Editado com sucesso"))
+        else
+            startAddExperience(data).then(() => 
+            toast.success("Adicionado com sucesso"))
         closeModal();
     }
 
     
     render(){
-        const {submitting,handleSubmit,editMode,isCurrentWork} = this.props;
+        const {submitting,handleSubmit,editMode,isCurrentWork,closeModal} = this.props;
         return(
-            <Container style={{padding:'25px'}}>
-            <h1>{editMode ? 'Editar' : 'Adicionar'} experiência</h1>
             <Form onSubmit={handleSubmit(this.submit)}>
+            <Modal.Header closeButton>
+                <Modal.Title>{editMode ? 'Editar' : 'Adicionar'} experiência</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
                 <Row>
                     <Col>
                         <Field name="post"
@@ -140,9 +142,21 @@ class ExperienceForm extends Component{
                         </Col>)
                     }
                 </Row>
-                <Button disabled={submitting} block type="submit" size="lg">Salvar</Button>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Row>
+                        {
+                            editMode ? 
+                            <Col className="mr-auto">
+                                <Button disabled={submitting} variant="outline-danger" block onClick={() => {closeModal()}} size="lg">Cancelar</Button>
+                            </Col> : null
+                        }
+                        <Col className="ml-auto">
+                            <Button disabled={submitting} block type="submit" size="lg">Salvar</Button>
+                        </Col>
+                    </Row>
+                </Modal.Footer>
             </Form>
-            </Container>
             
         );
     }
@@ -168,16 +182,14 @@ const validate = values => {
 
 const selector = formValueSelector('experience');
 
-const mapDispatchToProps = (dispatch,ownProps) => ({
-    addExperienceInfo: (experience,uid) => dispatch(addExperienceInfo(experience,uid))
+const mapDispatchToProps = (dispatch) => ({
+    startAddExperience: (experience) => dispatch(startAddExperience(experience)),
+    startEditExperience : (experience,experienceId) => dispatch(startEditExperience(experience,experienceId))
 });
 
 export default connect(state => {
     const isCurrentWork = selector(state,'isCurrentWork');
-    return {
-        isCurrentWork,
-        uid: state.auth.user.uid
-    };
+    return {isCurrentWork};
 },mapDispatchToProps)(reduxForm({
     form: 'experience',
     validate

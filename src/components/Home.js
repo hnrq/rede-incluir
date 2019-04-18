@@ -1,8 +1,14 @@
 import React,{Component} from 'react';
 import {Jumbotron} from 'react-bootstrap';
 import SignupForm from './forms/SignupForm';
+import {withRouter} from 'react-router-dom';
+import { firebaseAuth } from '../firebase';
 
-export default class Home extends Component{
+class Home extends Component{
+    constructor(props){
+        super(props);
+        if(firebaseAuth.currentUser) props.history.push(`/${firebaseAuth.currentUser.uid}`);
+    }
     render(){
         return (
             <Jumbotron>
@@ -11,5 +17,7 @@ export default class Home extends Component{
         );
     }
 }
+
+export default withRouter(Home);
 
 

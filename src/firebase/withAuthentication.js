@@ -4,12 +4,13 @@ import {withRouter} from 'react-router-dom';
 
 export default function withAuthentication(wrappedComponent){
     class AuthenticatedComponent extends React.Component {
-        componentWillMount(){
-            if(!firebaseAuth.currentUser) this.props.history.push('/');
+        constructor(props){
+            super(props);
+            if(!firebaseAuth.currentUser) props.history.push('/');
         }
 
-        componentWillReceiveProps(nextProps) {
-            if (!firebaseAuth.currentUser) this.props.history.push('/');
+        componentDidReceive(prevProps) {
+            if (!firebaseAuth.currentUser) prevProps.history.push('/');
         }
 
         render(){

@@ -8,7 +8,7 @@ import { faTrashAlt,faUpload } from '@fortawesome/free-solid-svg-icons';
 export default class AvatarUpload extends Component{
     constructor(props){
         super(props);
-        this.state = {image:undefined,scale:1.7,value:undefined}
+        this.state = {image:undefined,scale:1.0,value:undefined}
         this.handleChangeImage = this.handleChangeImage.bind(this);
     }
 
@@ -25,13 +25,20 @@ export default class AvatarUpload extends Component{
     handleChangeImage(){
         const { input: { onChange } } = this.props
         if(this.editor)
-            this.editor.getImageScaledToCanvas().toBlob((blob) => {
-                new File([blob], 'profile', {type: blob.type, lastModified: Date.now()});
-                onChange(blob);
-            });
+        this.editor.getImageScaledToCanvas().toBlob((blob) => {
+            onChange(blob);
+        });
     }
 
-    handleRemoveImage = e => this.setState({image:undefined,value:undefined});
+    static getDerivedStateFromProps(nextProps, prevState){
+        const {input:{value}} = nextProps;
+        const {image} = prevState;
+        if(image === undefined && value)
+            return {image:value}
+        return prevState;
+    }
+
+    handleRemoveImage = e => this.setState({image:'',value:undefined});
 
     render(){
         const {
@@ -39,6 +46,7 @@ export default class AvatarUpload extends Component{
             placeholder,
             label
         } = this.props;
+
         let message;
         const {error,warning,image,scale} = this.state;
         if (error || warning) message = <Form.Control.Feedback>{ error || warning }</Form.Control.Feedback>;
@@ -52,10 +60,10 @@ export default class AvatarUpload extends Component{
                     <ReactAvatarEditor className='image'
                         image={image}
                         ref={(editor) => {this.editor = editor}}
-                        width={height-20}
-                        height={height-20}
+                        width={height}
+                        height={height}
                         color={[255, 255, 255, 0.6]}
-                        border={10}
+                        border={0}
                         scale={scale}
                         borderRadius={100}
                         onMouseUp={this.handleChangeImage}
@@ -69,7 +77,7 @@ export default class AvatarUpload extends Component{
                     </div>
                 }
                 
-                <Slider className="image-scale" onAfterChange={this.handleChangeImage} min={1.2} max={3} step={0.01} onChange={this.handleScale} value={this.state.scale}/>
+                <Slider className="image-scale" onAfterChange={this.handleChangeImage} min={1} max={3} step={0.01} onChange={this.handleScale} value={this.state.scale}/>
                 <Form.Control style={{display: 'none'}} type="file" ref={(ref) => this.upload = ref} accept='.jpg, .png, .jpeg' onChange={this.handleUpload}/>
                 {message}
             </Form.Group>
