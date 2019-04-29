@@ -7,25 +7,17 @@ import placeholder from '../images/ppic-placeholder.jpg';
 import backgroundPlaceholder from '../images/background-placeholder.png';
 import ExperienceForm from './forms/ExperienceForm';
 import EditProfileForm from './forms/EditProfileForm';
-import List from './List';
+import ExperienceList from './List/ExperienceList';
+import GraduationList from './List/GraduationList';
 import ReactPlaceholder from 'react-placeholder';
-import {GRADUATION} from './ListItem';
-
-const graduations = [
-    {
-        institution:'Pontifícia Universidade Católica de Minas Gerais',
-        graduation: "Engineer's degree",
-        area:"Computer Software Engineering",
-        startDate:{year:2017},
-        endDate:{year:2022}
-    }
-]
+import GraduationForm from './forms/GraduationForm';
 
 class Profile extends Component{
     constructor(props){
         super(props);
         this.state = {
             showExperienceModal:false,
+            showGraduationModal:false,
             showProfileModal:false,
             ready:false,
         }
@@ -39,6 +31,15 @@ class Profile extends Component{
     handleCloseExperienceModal = () => {
         this.setState({
             showExperienceModal: false
+        });
+    }
+    handleShowGraduationModal = () => {
+        this.setState({showGraduationModal: true});
+    }
+
+    handleCloseGraduationModal = () => {
+        this.setState({
+            showGraduationModal: false
         });
     }
 
@@ -74,18 +75,16 @@ class Profile extends Component{
 
     addGraduation = () => {
         this.setState({editMode: false,initialValues:null});
-        this.handleShowExperienceModal();
+        this.handleShowGraduationModal();
     }
 
-    editExperience = (experience) => {
+    editGraduation = (experience) => {
         this.setState({editMode: true,initialValues:{
             ...experience,
-            startMonth: experience.startDate.month,
             startYear: experience.startDate.year,
-            endYear: (experience.endDate ? experience.endDate.year : null),
-            endMonth: (experience.endDate ? experience.endDate.month : null),
+            endYear: experience.endDate.year
         }});
-        this.handleShowExperienceModal();
+        this.handleShowGraduationModal();
     }
 
 
@@ -93,8 +92,8 @@ class Profile extends Component{
         if(this.state.ready){
             return(
                 <Container className="card experiences">
-                    <List title={"Experiências"}  items={this.props.experiences} listAction={isEditable ? this.addExperience : null} listItemAction={isEditable ? this.editExperience : null}/>
-                    <List title={"Formação acadêmica"} items={graduations} listAction={isEditable ? this.addGraduation : null} type={GRADUATION} listItemAction={isEditable ? this.editGraduation : null}/>
+                    <ExperienceList title={"Experiências"}  items={this.props.experiences} listAction={isEditable ? this.addExperience : null} listItemAction={isEditable ? this.editExperience : null}/>
+                    <GraduationList title={"Formação acadêmica"} items={this.props.graduations} listAction={isEditable ? this.addGraduation : null} listItemAction={isEditable ? this.editGraduation : null}/>
                 </Container>
             )
         }
@@ -115,7 +114,7 @@ class Profile extends Component{
                             <img alt="profile-pic" src={profilePic ? profilePic : placeholder}/>
                         </ReactPlaceholder>
                     </div>
-                    <div className="info">
+                    <div className="profile-info">
                         <div className="title">
                             <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={this.state.ready} style={{width:170,height:30}}>
                                 <h3 style={{fontWeight:'bold'}}>{firstName ? firstName + " " + lastName : 'Ronaldo'}</h3>
@@ -137,13 +136,13 @@ class Profile extends Component{
                     </div>
             </Container>
             {this.renderLists(editable)}
-            <Modal show={this.state.showExperienceModal} onHide={this.handleCloseExperienceModal}>
+            <Modal size="lg" show={this.state.showExperienceModal} onHide={this.handleCloseExperienceModal}>
                 <ExperienceForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseExperienceModal}/>
             </Modal>
-            <Modal show={this.showGraduationModal} onHide={this.handleCloseGraduationModal}>
-                <ExperienceForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseGraduationModal}/>
+            <Modal size="lg" show={this.state.showGraduationModal} onHide={this.handleCloseGraduationModal}>
+                <GraduationForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseGraduationModal}/>
             </Modal>
-            <Modal show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
+            <Modal size="lg" show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
                 <EditProfileForm initialValues={{firstName,lastName,workLocation,occupation,desc,profilePic}} closeModal={this.handleCloseProfileModal}/>
             </Modal>
             </>
@@ -152,7 +151,7 @@ class Profile extends Component{
     }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
     ...state.userInfo,
     uid: state.auth.user ? state.auth.user.uid : null
 });

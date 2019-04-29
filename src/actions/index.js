@@ -1,6 +1,6 @@
 import * as types from './types';
 import {signOut} from '../firebase/auth';
-import {editProfile,saveExperience, editExperience} from '../firebase/queries';
+import {editProfile,saveExperience, editExperience, saveGraduation, editGraduation, deleteGraduation, deleteExperience} from '../firebase/queries';
 import {firebaseRef,storageRef} from '../firebase';
 import { toast } from 'react-toastify';
 
@@ -49,12 +49,12 @@ export function addProfilePicture(downloadURL) {
     }
 }
 
-export function addExperience(experience,uid) {
+export function addExperience(experience,id) {
     return {
         type: types.ADD_EXPERIENCE,
         payload: {
             ...experience,
-            uid
+            id
         }
     };
 }
@@ -64,17 +64,42 @@ export function startAddExperience(experience) {
         const uid = getState().auth.user.uid;
         return saveExperience(experience,uid).then((result)=>{
             dispatch(addExperience(experience, result.key));
+            toast.success("Experiência adicionada com sucesso.");
+        },(error)=>{
+            toast.error("Erro ao adicionar experiência.");
         });
     }
 }
 
 export function startEditExperience(experience,id) {
     return (dispatch, getState) => {
-        debugger;
         const uid = getState().auth.user.uid;
-        return editExperience(experience,uid,id).then(()=>{
+        return editExperience(experience,uid,id).then((result)=>{
             dispatch(addExperience(experience, id));
+            toast.success("Experiência editada com sucesso.");
+        },(error)=>{
+            toast.error("Erro ao editar experiência.");
         });
+    }
+}
+
+
+
+export function startDeleteExperience(id) {
+    return (dispatch, getState) => {
+        const uid = getState().auth.user.uid;
+        return deleteExperience(uid,id).then(()=>{
+            dispatch(removeExperience(id));
+            toast.success("Experiência excluída com sucesso.");
+        });
+    }
+}
+
+
+export function removeExperience(id){
+    return {
+        type: types.DELETE_EXPERIENCE,
+        payload:{id}
     }
 }
 
@@ -112,5 +137,56 @@ export function startUploadProfilePic(profilePic) {
                 reader.readAsDataURL(image);
             });
         });
+    }
+}
+
+export function addGraduation(graduation, id) {
+    return {
+        type: types.ADD_GRADUATION,
+        payload: {
+            ...graduation,
+            id
+        }
+    };
+}
+
+export function startAddGraduation(graduation) {
+    return (dispatch, getState) => {
+        const uid = getState().auth.user.uid;
+        return saveGraduation(graduation, uid).then((result) => {
+            dispatch(addGraduation(graduation, result.key));
+            toast.success("Formação adicionada com sucesso.");
+        },(error) => {
+            toast.error("Erro ao adicionar formação.")
+        });
+    }
+}
+
+export function startEditGraduation(graduation, id) {
+    return (dispatch, getState) => {
+        const uid = getState().auth.user.uid;
+        return editGraduation(graduation, uid, id).then(() => {
+            dispatch(addGraduation(graduation, id));
+            toast.success("Formação editada com sucesso.");
+        },(error) => {
+            toast.error("Erro ao editar formação.")
+        });
+    }
+}
+
+export function startDeleteGraduation(id) {
+    return (dispatch, getState) => {
+        const uid = getState().auth.user.uid;
+        return deleteGraduation(uid, id).then(() => {
+            dispatch(removeGraduation(id));
+            toast.success("Experiência excluída com sucesso.");
+        });
+    }
+}
+
+export function removeGraduation(id){
+    return {
+        type: types.DELETE_GRADUATION,
+        payload:{id}
     }
 }

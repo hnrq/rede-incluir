@@ -11,3 +11,21 @@ export const saveExperience = (experience,uid) =>
 export const editExperience = (experience, uid, experienceId) => 
     firebaseRef.child(`users/${uid}/experiences/${experienceId}`)
     .update(experience);
+
+export const deleteExperience = (uid, experienceId) => 
+    firebaseRef.child(`users/${uid}/experiences/${experienceId}`)
+    .remove();
+
+export const saveGraduation = (graduation, uid) => firebaseRef
+    .child(`users/${uid}/graduations`)
+    .push(graduation)
+
+export const editGraduation = (graduation, uid, graduationId) => firebaseRef
+    .child(`users/${uid}/graduations/${graduationId}`)
+    .update(graduation);
+
+export const deleteGraduation = (uid, graduationId) => firebaseRef
+    .child(`users/${uid}/graduations/${graduationId}`)
+    .remove();
+
+

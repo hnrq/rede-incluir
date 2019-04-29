@@ -1,128 +1,185 @@
-import React,{Component} from 'react';
-import {Field, reduxForm,formValueSelector} from 'redux-form';
-import {Form,Button,Row,Col,Container} from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import {startAddGraduation} from '../../actions';
+import React, {Component} from 'react';
+import {Field, reduxForm, formValueSelector} from 'redux-form';
+import {Form, Button, Row, Col, Modal} from 'react-bootstrap';
+import {startAddGraduation, startEditGraduation, startDeleteGraduation} from '../../actions';
 import {connect} from 'react-redux';
 import TextField from '../custom-bootstrap/TextField';
 
-class GraduationForm extends Component{
+class GraduationForm extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            showDeleteModal:false,
+        }
+    }
+
+    handleCloseDeleteModal = () => {
+        this.setState({
+            showDeleteModal: false
+        });
+    }
+    handleShowDeleteModal = () => {
+        this.setState({showDeleteModal: true});
+    }
 
     submit = (values) => {
-        const {editMode,closeModal,uid,startAddGraduation} = this.props;
+        const {editMode, closeModal, editGraduation, addGraduation} = this.props;
         const data = {
             ...values,
             startDate: {
-                'month': values.startMonth ? values.startMonth : 0,
-                'year': values.startYear,
+                'year': values.startYear
             },
             endDate: {
-                'month': values.endMonth ? values.endMonth : 0,
-                'year': values.endYear ? values.endYear : 0,
-            },
-            startMonth: undefined,
-            startYear: undefined,
-            endMonth: undefined,
-            endYear: undefined,
+                'year': values.endYear
+            }
         }
-        if(editMode){
-            toast.success("Editado com sucesso");
-        } else{
-            addExperience(data,uid).then((result)=>{
-                startAddGraduation(data, result.key);
-                toast.success("Adicionado com sucesso");
-            })
-        }
+        delete data.id;
+        delete data.startMonth;
+        delete data.startYear;
+        delete data.endMonth;
+        delete data.endYear;
+        delete data.type;
+
+        if (editMode) editGraduation(data, values.id);
+        else addGraduation(data, values.id);
         closeModal();
     }
 
-    
-    render(){
-        const {submitting,handleSubmit,editMode,isCurrentWork} = this.props;
-        return(
+    deleteGraduation = () => {
+        this.props.deleteGraduation(this.props.id).then((result) => {
+            this.handleCloseDeleteModal();
+            this.props.closeModal();
+        });
+    }
+
+    render() {
+        const {submitting, handleSubmit, editMode} = this.props;
+        return (
+            <>
             <Form onSubmit={handleSubmit(this.submit)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{editMode ? 'Editar' : 'Adicionar'} experiência</Modal.Title>
+                    <Modal.Title>{editMode
+                            ? 'Editar '
+                            : 'Adicionar '}
+                        graduação</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Row>
                         <Col>
-                            <Field name="institution"
-                            type = 'text'
-                            component = {TextField}
-                            label = {"Instituição de Ensino"}
-                            placeholder = {"Ex: PUC Minas"}/>
+                            <Field
+                                name="institution"
+                                type='text'
+                                component={TextField}
+                                label={"Instituição de Ensino"}
+                                placeholder={"Ex: PUC Minas"}/>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
-                        <Field name="graduation"
-                            type = 'text'
-                            component = {TextField}
-                            label = {"Formação"}
-                            placeholder = {"Ex: Bacharelado"}/>
+                            <Field
+                                name="graduation"
+                                type='text'
+                                component={TextField}
+                                label={"Formação"}
+                                placeholder={"Ex: Bacharelado"}/>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
-                        <Field name="area"
-                            component = {TextField}
-                            type="text"
-                            label = {"Área de estudo"}
-                            placeholder = {"Ex: Direito"}/>
+                            <Field
+                                name="area"
+                                component={TextField}
+                                type="text"
+                                label={"Área de estudo"}
+                                placeholder={"Ex: Direito"}/>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
-                        <Field name="startYear"
-                            label="Do ano de"
-                            placeholder="Ano inicial"
-                            component={TextField}
-                            type="number" normalize={normalizeYear}/>
+                            <Field
+                                name="startYear"
+                                label="Do ano de"
+                                placeholder="Ano inicial"
+                                component={TextField}
+                                type="number"
+                                normalize={normalizeYear}/>
                         </Col>
                         <Col>
-                        <Field name="endYear"
-                            placeholder="Ano de término"
-                            label="Até (ou previsão)"
-                            component={TextField}
-                            type="number" normalize={normalizeYear}/>
+                            <Field
+                                name="endYear"
+                                placeholder="Ano de término"
+                                label="Até (ou previsão)"
+                                component={TextField}
+                                type="number"
+                                normalize={normalizeYear}/>
                         </Col>
                     </Row>
                 </Modal.Body>
-                <Button disabled={submitting} block type="submit" size="lg">Salvar</Button>
+                <Modal.Footer className="footer-button">
+                    {editMode
+                        ? <Button
+                                disabled={submitting}
+                                variant="outline-danger"
+                                onClick={() => {
+                                this.handleShowDeleteModal()
+                            }}
+                                size="lg">Excluir</Button>
+                        : null
+}
+                    <Button disabled={submitting} className="ml-auto" type="submit" size="lg">Salvar</Button>
+                </Modal.Footer>
             </Form>
+            {this.state.showDeleteModal ? 
+                    <div className="fade modal-backdrop show" aria-hidden = "true"/> : null}
+            <Modal centered className="modal-small" size="sm" show={this.state.showDeleteModal} onHide={this.handleCloseDeleteModal}>
+                <Modal.Header closeButton/>
+                <Modal.Body>
+                    <p>Deseja excluir esta formação?</p>
+                </Modal.Body>
+                <Modal.Footer  className="footer-button">
+                        <Button disabled={submitting} variant="danger" onClick={() => {this.deleteGraduation()}}>Excluir</Button>
+                        <Button disabled={submitting} variant="outline-primary" onClick={this.handleCloseDeleteModal}>Não, Obrigado</Button>
+                </Modal.Footer>
+            </Modal>
+            </>
         );
     }
 };
 
 const normalizeYear = (value, previousValue) => {
-    if (!value) return value
-    if(value < 0) return previousValue;
-    if (value.length > 4) return previousValue;
-    if (value > new Date().getFullYear()) return new Date().getFullYear();
+    if (!value) 
+        return value
+    if (value < 0) 
+        return previousValue;
+    if (value.length > 4) 
+        return previousValue;
     return value;
 }
 
-
 const validate = values => {
     const errors = {};
-    if(!values.institution) errors.institution = 'Campo obrigatório.';
-    if(!values.graduation) errors.graduation = 'Campo obrigatório.';
-    if(!values.area) errors.area = 'Campo obrigatório.';
-    if(!values.startYear) errors.startYear = 'Campo obrigatório.'
-    if(!values.endYear) errors.endYear = 'Campo obrigatório.'
+    if (!values.institution) 
+        errors.institution = 'Campo obrigatório.';
+    if (!values.graduation) 
+        errors.graduation = 'Campo obrigatório.';
+    if (!values.area) 
+        errors.area = 'Campo obrigatório.';
+    if (!values.startYear) 
+        errors.startYear = 'Campo obrigatório.'
+    if (!values.endYear) 
+        errors.endYear = 'Campo obrigatório.'
     return errors;
 }
 
-const selector = formValueSelector('experience');
+const selector = formValueSelector('graduation');
 
 const mapDispatchToProps = (dispatch) => ({
-    addGraduation: (experience,uid) => dispatch(startAddGraduation(experience,uid)),
-    editGraduation: (experience,uid) => dispatch(startEditGraduation(experience,uid))
+    addGraduation: (graduation) => dispatch(startAddGraduation(graduation)),
+    editGraduation: (graduation, graduationId) => dispatch(startEditGraduation(graduation, graduationId)),
+    deleteGraduation: (graduationId) => dispatch(startDeleteGraduation(graduationId))
 });
 
-export default connect(state => ({uid: state.auth.user.uid}),
-mapDispatchToProps)(reduxForm({
-    form: 'graduation',
-    validate
-})(GraduationForm));
+export default connect(state => {
+    const id = selector(state, 'id');
+    return {id};
+}, mapDispatchToProps)(reduxForm({form: 'graduation', validate})(GraduationForm));

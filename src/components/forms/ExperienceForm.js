@@ -1,15 +1,29 @@
 import React,{Component} from 'react';
 import {Field, reduxForm,formValueSelector} from 'redux-form';
 import {Form,Button,Row,Col,Modal} from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import {startAddExperience,startEditExperience} from '../../actions';
+import {startAddExperience,startEditExperience, startDeleteExperience} from '../../actions';
 import {connect} from 'react-redux';
 import TextField from '../custom-bootstrap/TextField';
 
 class ExperienceForm extends Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            showDeleteModal:false,
+        }
+    }
+
+    handleCloseDeleteModal = () => {
+        this.setState({
+            showDeleteModal: false
+        });
+    }
+    handleShowDeleteModal = () => {
+        this.setState({showDeleteModal: true});
+    }
 
     submit = (values) => {
-        const {editMode,closeModal,startAddExperience,startEditExperience} = this.props;
+        const {editMode,closeModal,addExperience,editExperience} = this.props;
         const data = {
             ...values,
             startDate: {
@@ -28,19 +42,23 @@ class ExperienceForm extends Component{
         delete data.endYear;
         delete data.type;
 
-        if(editMode)
-            startEditExperience(data,values.id).then(() => 
-            toast.success("Editado com sucesso"))
-        else
-            startAddExperience(data).then(() => 
-            toast.success("Adicionado com sucesso"))
+        if(editMode) editExperience(data,values.id) 
+        else addExperience(data);     
         closeModal();
+    }
+
+    deleteExperience = () => {
+        this.props.deleteExperience(this.props.id).then((result) => {
+            this.handleCloseDeleteModal();
+            this.props.closeModal();
+        });
     }
 
     
     render(){
-        const {submitting,handleSubmit,editMode,isCurrentWork,closeModal} = this.props;
+        const {submitting,handleSubmit,editMode,isCurrentWork} = this.props;
         return(
+            <>
             <Form onSubmit={handleSubmit(this.submit)}>
             <Modal.Header closeButton>
                 <Modal.Title>{editMode ? 'Editar' : 'Adicionar'} experiência</Modal.Title>
@@ -52,7 +70,7 @@ class ExperienceForm extends Component{
                         type = 'text'
                         component = {TextField}
                         label = {"Cargo"}
-                        placeholder = {"Cargo"}/>
+                        placeholder = {"Ex: Gerente"}/>
                     </Col>
                 </Row>
                 <Row>
@@ -61,7 +79,7 @@ class ExperienceForm extends Component{
                         type = 'text'
                         component = {TextField}
                         label = {"Empresa"}
-                        placeholder = {"Empresa"}/>
+                        placeholder = {"Ex: Apple"}/>
                     </Col>
                 </Row>
                 <Row>
@@ -70,7 +88,7 @@ class ExperienceForm extends Component{
                         component = {TextField}
                         type="text"
                         label = {"Localidade"}
-                        placeholder = {"Localidade"}/>
+                        placeholder = {"Ex: Belo Horizonte"}/>
                     </Col>
                 </Row>
                 <Row>
@@ -78,7 +96,7 @@ class ExperienceForm extends Component{
                         <Field name="isCurrentWork"
                         component = {TextField}
                         type="checkbox" onToggle={this.toggleIsCurrentWork}
-                        label = {"Trabalho aqui atualmente"}/>
+                        label = {"Este é meu cargo atual"}/>
                     </Col>
                 </Row>
                 <Row>
@@ -143,21 +161,33 @@ class ExperienceForm extends Component{
                     }
                 </Row>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Row>
-                        {
-                            editMode ? 
-                            <Col className="mr-auto">
-                                <Button disabled={submitting} variant="outline-danger" block onClick={() => {closeModal()}} size="lg">Cancelar</Button>
-                            </Col> : null
-                        }
-                        <Col className="ml-auto">
-                            <Button disabled={submitting} block type="submit" size="lg">Salvar</Button>
-                        </Col>
-                    </Row>
+                <Modal.Footer className="footer-button">
+                        {editMode
+                            ? <Button
+                                    disabled={submitting}
+                                    variant="outline-danger"
+                                    onClick={() => {
+                                    this.handleShowDeleteModal()
+                                }}
+                                    size="lg">Excluir</Button>
+                            : null
+}
+                        <Button disabled={submitting} className="ml-auto" type="submit" size="lg">Salvar</Button>
                 </Modal.Footer>
             </Form>
-            
+            {this.state.showDeleteModal ? 
+                    <div className="fade modal-backdrop show" aria-hidden = "true"/> : null}
+            <Modal centered className="modal-small" size="sm" show={this.state.showDeleteModal} onHide={this.handleCloseDeleteModal}>
+                <Modal.Header closeButton/>
+                <Modal.Body>
+                    <p>Deseja excluir esta experiência?</p>
+                </Modal.Body>
+                <Modal.Footer className="footer-button">
+                    <Button disabled={submitting} variant="danger" onClick={() => {this.deleteExperience()}}>Excluir</Button>
+                    <Button disabled={submitting} variant="outline-primary" onClick={this.handleCloseDeleteModal}>Não, Obrigado</Button>
+                </Modal.Footer>
+            </Modal>
+            </>
         );
     }
 };
@@ -183,13 +213,15 @@ const validate = values => {
 const selector = formValueSelector('experience');
 
 const mapDispatchToProps = (dispatch) => ({
-    startAddExperience: (experience) => dispatch(startAddExperience(experience)),
-    startEditExperience : (experience,experienceId) => dispatch(startEditExperience(experience,experienceId))
+    addExperience: (experience) => dispatch(startAddExperience(experience)),
+    editExperience : (experience,experienceId) => dispatch(startEditExperience(experience,experienceId)),
+    deleteExperience: (experienceId) => dispatch(startDeleteExperience(experienceId))
 });
 
 export default connect(state => {
     const isCurrentWork = selector(state,'isCurrentWork');
-    return {isCurrentWork};
+    const id = selector(state,'id');
+    return {isCurrentWork,id};
 },mapDispatchToProps)(reduxForm({
     form: 'experience',
     validate
