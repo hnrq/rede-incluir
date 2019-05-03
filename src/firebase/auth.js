@@ -1,5 +1,6 @@
 import {firebaseRef, firebaseAuth} from './index';
 import {toast} from 'react-toastify';
+import {getErrorMessage} from '../utils/Messages';
 
 export const signUp = (user) => {
     firebaseAuth
@@ -14,12 +15,14 @@ export const signUp = (user) => {
                 toast.success('Conta criada com sucesso.');
                 authenticate(user.email, password);
             }, (error) => error);
-        }, (error) => error);
+        }, (error) => {toast.error(getErrorMessage(error.code))});
 }
 
 export const signOut = () => firebaseAuth.signOut();
 
-export const authenticate = (email, password) => firebaseAuth.signInWithEmailAndPassword(email, password);
+export const authenticate = (email, password) => firebaseAuth.signInWithEmailAndPassword(email, password).then((success)=>{},(error)=>{
+    toast.error(getErrorMessage(error.code));
+});
 
 export const saveInfo = (user) => firebaseRef
     .child(`users/${user.uid}`)

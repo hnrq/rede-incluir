@@ -222,7 +222,7 @@ export function startDeleteGraduation(id) {
         const uid = getState().auth.user.uid;
         return deleteGraduation(uid, id).then(() => {
             dispatch(removeGraduation(id));
-            toast.success("Experiência excluída com sucesso.");
+            toast.success("Formação excluída com sucesso.");
         });
     }
 }
