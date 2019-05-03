@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {Link} from 'react-router-dom';
 import {faPencilAlt} from '@fortawesome/free-solid-svg-icons';
 
 export default class ListItem extends Component {
@@ -11,10 +12,11 @@ export default class ListItem extends Component {
             subtitle,
             info,
             extraInfo,
-            picture
+            picture,
+            to
         } = this.props;
-        return (
-            <div className="list-item">
+        const item =
+        <div className="list-item">
                 <img alt="company-pic" src={picture} className="avatar small"/>
                 <div className="list-info">
                     <h5>{title}</h5>
@@ -31,6 +33,12 @@ export default class ListItem extends Component {
                     <hr/>
                 </div>
             </div>
-        );
+        if(to)
+            return (
+                <Link to={to}>
+                    {item}
+                </Link>
+            );
+        else return item;
     }
 }

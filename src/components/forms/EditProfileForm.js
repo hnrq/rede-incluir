@@ -1,10 +1,11 @@
 import React,{Component} from "react";
-import {Field, reduxForm} from "redux-form";
+import {Field, reduxForm, formValueSelector} from "redux-form";
 import {Form,Button,Row,Col,Modal} from "react-bootstrap";
 import { startEditUserInfo } from "../../actions";
 import { connect } from "react-redux";
-import TextField from "../custom-bootstrap/TextField";
+import InputField from "../custom-bootstrap/InputField";
 import Avatar from "../custom-bootstrap/Avatar";
+import {disabilities} from '../../utils/Disabilities';
 
 class EditProfileForm extends Component{
     submit = (values) => {
@@ -13,7 +14,7 @@ class EditProfileForm extends Component{
     }
 
     render(){
-        const {handleSubmit,submitting} = this.props;
+        const {handleSubmit,submitting,hasCID10} = this.props;
         return(
             <Form onSubmit={handleSubmit(this.submit)}>
             <Modal.Header closeButton>
@@ -34,26 +35,58 @@ class EditProfileForm extends Component{
                     <Col  sm={7}>
                         <Field name = "firstName"
                         type = "text"
-                        component = {TextField}
+                        component = {InputField}
                         label  = {"Nome"}
                         placeholder = {"Nome"}/>
                         <Field name = "lastName"
                         type = "text"
-                        component = {TextField}
+                        component = {InputField}
                         label  = {"Sobrenome"}
                         placeholder = {"Sobrenome"}/>
                         <Field name = "occupation"
                         type = "text"
-                        component = {TextField}
+                        component = {InputField}
                         label  = {"Profissão"}
                         placeholder = {"Profissão"}/>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
+                        <Field style={{marginBottom:5}}
+                            name="disabilities"
+                            closeMenuOnSelect={false}
+                            type='select-multiple'
+                            component={InputField}
+                            placeholder="Selecione uma ou mais deficiências"
+                            options={disabilities}
+                            label="Deficiências"/>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Field
+                            name="hasCID10"
+                            component={InputField}
+                            type="checkbox"
+                            label={"Possuo diagnóstico de patologia listada no CID10"}/>
+                    </Col>
+                </Row>
+                {hasCID10 ? <Row>
+                    <Col>
+                        <Field
+                            name="cid10"
+                            component={InputField}
+                            options={disabilities}
+                            normalize={normalizeCID10}
+                            label="Código CID10"
+                            placeholder="Ex.: F41"/>
+                    </Col>
+                </Row> : null}
+                <Row>
+                    <Col>
                         <Field name = "workLocation"
                         type = "text"
-                        component = {TextField}
+                        component = {InputField}
                         label  = {"Local de trabalho"}
                         placeholder = {"Local de trabalho"}/>
                     </Col>
@@ -62,7 +95,7 @@ class EditProfileForm extends Component{
                     <Col>
                         <Field name = "desc"
                         type = "textarea"
-                        component = {TextField}
+                        component = {InputField}
                         label  = {"Descrição"}
                         placeholder = {"Descrição"}/>
                     </Col>
@@ -76,9 +109,12 @@ class EditProfileForm extends Component{
     }
 }
 
-const mapStateToProps = (state,ownProps) => ({
-    uid: state.auth.user.uid
-});
+const selector = formValueSelector('editProfile');
+
+const mapStateToProps = (state) => ({
+        hasCID10: selector(state, 'hasCID10'),
+        uid: state.auth.user.uid
+    });
 
 const mapDispatchToProps = (dispatch) => ({
     editUserInfo: (userInfo) => {
@@ -86,10 +122,17 @@ const mapDispatchToProps = (dispatch) => ({
     },
 });
 
+const normalizeCID10 = (value, previousValue) => {
+    if (value.length > 3) 
+        return previousValue;
+    return value;
+}
+
 const validate = values => {
     const errors = {}
     if (!values.firstName) errors.firstName = 'Campo obrigatório.';
     if (!values.lastName) errors.lastName = 'Campo obrigatório.';
+    if (!values.disabilities) errors.disabilities = 'Escolha uma deficiência ou mais';
     return errors;
 }
 

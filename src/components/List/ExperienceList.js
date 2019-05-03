@@ -41,7 +41,7 @@ export default class ExperienceList extends Component {
                             id={item[0]}
                             action={() => this.editExperience(item[1],item[0])}
                             type={type}/>)
-                    : <i>Lista Vazia</i>}
+                    : <i>Não há experiências</i>}
                 <hr/>
             </div>
         )

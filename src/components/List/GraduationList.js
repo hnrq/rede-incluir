@@ -17,7 +17,8 @@ export default class GraduationList extends Component {
 
     getSortedItems = () => {
         const {items} = this.props;
-        let sortableItems = Object
+        if(!items) return;
+        var sortableItems = Object
             .keys(items)
             .map((key) => ({
                 ...items[key],
@@ -57,7 +58,7 @@ export default class GraduationList extends Component {
                         id={item.id}
                         action={() => this.editGraduation(item, item.id)}
                         type={type}/>)
-                    : <i>Lista Vazia</i>}
+                    : <i>Não há graduações</i>}
                 <hr/>
             </div>
         )

@@ -38,7 +38,11 @@ export default class AvatarUpload extends Component{
         return prevState;
     }
 
-    handleRemoveImage = e => this.setState({image:'',value:undefined});
+    handleRemoveImage = e => {
+        const { input: { onChange } } = this.props
+        this.setState({image:'',value:undefined})
+        onChange(null);
+    };
 
     render(){
         const {

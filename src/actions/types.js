@@ -6,3 +6,5 @@ export const ADD_PROFILE_PICTURE = 5;
 export const ADD_GRADUATION = 6;
 export const DELETE_EXPERIENCE = 7;
 export const DELETE_GRADUATION = 8;
+export const REMOVE_PROFILE_PICTURE = 9;
+export const ADD_SEARCH_RESULTS = 10;

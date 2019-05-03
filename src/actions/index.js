@@ -27,11 +27,39 @@ export function getUserInfo(uid,ready) {
                     reader.readAsDataURL(image);
                 }
                 xhr.send();
+            },(error) => {
+                dispatch(removeProfilePicture())
+                dispatch(addUserInfo({...values}));
+                ready();
             });
         });
     }
 }
 
+export function startSearch(searchCriteria,ready){
+    return(dispatch,getState) => {
+        var searchResults = {};
+        firebaseRef.child(`users`).once('value').then((snapshot) => {
+            Object
+            .entries(snapshot.val())
+            .forEach((searchResult) => {
+                delete searchResult[1].graduations;
+                delete searchResult[1].experiences;
+                if(searchResult[0] !== getState().auth.user.uid && searchResult[1].firstName.toLowerCase().includes(searchCriteria.toLowerCase()))
+                    searchResults = {...searchResults,[searchResult[0]]:searchResult[1]};
+            });
+            dispatch(addSearchResults(searchResults));
+            ready();
+        });
+    }
+}
+
+export function addSearchResults(searchResults){
+    return {
+        type: types.ADD_SEARCH_RESULTS,
+        payload: {...searchResults}
+    }
+}
 
 export function addUserInfo(userInfo) {
     return {
@@ -46,6 +74,12 @@ export function addProfilePicture(downloadURL) {
     return {
         type: types.ADD_PROFILE_PICTURE,
         payload: downloadURL
+    }
+}
+
+export function removeProfilePicture() {
+    return {
+        type: types.REMOVE_PROFILE_PICTURE
     }
 }
 
@@ -118,6 +152,7 @@ export function startEditUserInfo(userInfo) {
     return (dispatch, getState) => {
         const profilePic = userInfo.profilePic;
         delete userInfo.profilePic;
+        Object.keys(userInfo).forEach(key => userInfo[key] === undefined ? delete userInfo[key] : '');
         return editProfile({...userInfo},getState().auth.user.uid).then((result) => {
             dispatch(addUserInfo({...userInfo}));
             toast.success("Perfil editado com sucesso.");
@@ -128,15 +163,23 @@ export function startEditUserInfo(userInfo) {
 
 export function startUploadProfilePic(profilePic) {
     return (dispatch, getState) => {
-        var upload = storageRef.child(`users/${getState().auth.user.uid}/profile-picture`).put(profilePic);
-        return upload.on('state_changed', function (snapshot) {}, (error) => {}, function () {
-            return upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                const image = new File([profilePic], 'profile', {type: profilePic.type,lastModified: Date.now()});
-                const reader = new FileReader();
-                reader.onload = () => dispatch(addProfilePicture(reader.result));
-                reader.readAsDataURL(image);
+        if(profilePic) {
+            var upload = storageRef.child(`users/${getState().auth.user.uid}/profile-picture`).put(profilePic);
+            return upload.on('state_changed', function (snapshot) {}, (error) => {}, function () {
+                return upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    const image = new File([profilePic], 'profile', {type: profilePic.type,lastModified: Date.now()});
+                    const reader = new FileReader();
+                    reader.onload = () => dispatch(addProfilePicture(reader.result));
+                    reader.readAsDataURL(image);
+                });
             });
-        });
+        } else {
+            storageRef.child(`users/${getState().auth.user.uid}/profile-picture`).delete().then((result)=>{
+                dispatch(removeProfilePicture());
+            },(error)=>{
+
+            })
+        }
     }
 }
 

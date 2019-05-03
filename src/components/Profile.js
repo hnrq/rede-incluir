@@ -3,13 +3,14 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {getUserInfo} from '../actions';
 import {Container,Button,Modal} from 'react-bootstrap';
-import placeholder from '../images/ppic-placeholder.jpg';
+import placeholder from '../images/ppic-placeholder.png';
 import backgroundPlaceholder from '../images/background-placeholder.png';
 import ExperienceForm from './forms/ExperienceForm';
 import EditProfileForm from './forms/EditProfileForm';
 import ExperienceList from './List/ExperienceList';
 import GraduationList from './List/GraduationList';
 import ReactPlaceholder from 'react-placeholder';
+import {disabilities} from '../utils/Disabilities';
 import GraduationForm from './forms/GraduationForm';
 
 class Profile extends Component{
@@ -44,7 +45,8 @@ class Profile extends Component{
     }
 
     handleShowProfileModal = () => {
-        this.setState({showProfileModal: true});
+        const {firstName,lastName,workLocation,occupation,desc,profilePic,disabilities,hasCID10,cid10} = this.props;
+        this.setState({showProfileModal: true,initialValues:{firstName,lastName,workLocation,occupation,desc,profilePic,hasCID10,disabilities,cid10}});
     }
 
     handleCloseProfileModal = () => {
@@ -101,6 +103,9 @@ class Profile extends Component{
 
     render(){
         const {profilePic,backgroundPic,firstName,lastName,workLocation,occupation,desc} = this.props;
+        let userDisabilities;
+        if(this.props.disabilities)
+            userDisabilities = disabilities.filter((disability) => this.props.disabilities.includes(disability.value)).map((disability,index) => <i className="disability" key={index}>{disability.label}</i>);
         const {ready} = this.state;
         const editable = this.props.location.pathname.substr(1) === this.props.uid;
         return(
@@ -117,14 +122,19 @@ class Profile extends Component{
                     <div className="profile-info">
                         <div className="title">
                             <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={this.state.ready} style={{width:170,height:30}}>
-                                <h3 style={{fontWeight:'bold'}}>{firstName ? firstName + " " + lastName : 'Ronaldo'}</h3>
+                                <h3 style={{fontWeight:'bold'}}>{firstName ? firstName + " " + lastName : ''}</h3>
                             </ReactPlaceholder>
                         </div>
                         <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={this.state.ready} style={{width:250,height:20}}>
-                            <h5 className="occupation">{occupation}</h5>
+                            {occupation ? <h5 className="occupation">{occupation}</h5> : ''}
                         </ReactPlaceholder>
                         <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={this.state.ready} style={{width:250,height:20}}>
-                            <p className="location">{workLocation}</p>
+                            {workLocation ? <p className="location">{workLocation}</p> : ''}
+                        </ReactPlaceholder>
+                        <ReactPlaceholder type='text' rows={3} showLoadingAnimation={true} ready={this.state.ready} style={{width:170,height:30}}>
+                            <div className="disabilities">
+                                {userDisabilities}
+                            </div>
                         </ReactPlaceholder>
                         {editable && ready ? <Button className="edit-profile" onClick={this.handleShowProfileModal}>Editar Perfil</Button> : null}
                         <hr/>
@@ -143,7 +153,7 @@ class Profile extends Component{
                 <GraduationForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseGraduationModal}/>
             </Modal>
             <Modal size="lg" show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
-                <EditProfileForm initialValues={{firstName,lastName,workLocation,occupation,desc,profilePic}} closeModal={this.handleCloseProfileModal}/>
+                <EditProfileForm initialValues={this.state.initialValues} closeModal={this.handleCloseProfileModal}/>
             </Modal>
             </>
             

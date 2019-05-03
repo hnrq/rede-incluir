@@ -3,7 +3,7 @@ import {Field, reduxForm,formValueSelector} from 'redux-form';
 import {Form,Button,Row,Col,Modal} from 'react-bootstrap';
 import {startAddExperience,startEditExperience, startDeleteExperience} from '../../actions';
 import {connect} from 'react-redux';
-import TextField from '../custom-bootstrap/TextField';
+import InputField from '../custom-bootstrap/InputField';
 
 class ExperienceForm extends Component{
     constructor(props){
@@ -68,7 +68,7 @@ class ExperienceForm extends Component{
                     <Col>
                         <Field name="post"
                         type = 'text'
-                        component = {TextField}
+                        component = {InputField}
                         label = {"Cargo"}
                         placeholder = {"Ex: Gerente"}/>
                     </Col>
@@ -77,7 +77,7 @@ class ExperienceForm extends Component{
                     <Col>
                     <Field name="company"
                         type = 'text'
-                        component = {TextField}
+                        component = {InputField}
                         label = {"Empresa"}
                         placeholder = {"Ex: Apple"}/>
                     </Col>
@@ -85,7 +85,7 @@ class ExperienceForm extends Component{
                 <Row>
                     <Col>
                     <Field name="workLocation"
-                        component = {TextField}
+                        component = {InputField}
                         type="text"
                         label = {"Localidade"}
                         placeholder = {"Ex: Belo Horizonte"}/>
@@ -94,7 +94,7 @@ class ExperienceForm extends Component{
                 <Row>
                     <Col>
                         <Field name="isCurrentWork"
-                        component = {TextField}
+                        component = {InputField}
                         type="checkbox" onToggle={this.toggleIsCurrentWork}
                         label = {"Este é meu cargo atual"}/>
                     </Col>
@@ -102,7 +102,7 @@ class ExperienceForm extends Component{
                 <Row>
                     <Col>
                         <Field name="startMonth"
-                        component={TextField}
+                        component={InputField}
                         type="select"
                         label={'Data de inicio'}>
                             <option value="1">Jan</option>
@@ -123,7 +123,7 @@ class ExperienceForm extends Component{
                         !isCurrentWork && (
                             <Col>
                                 <Field name="endMonth"
-                                component={TextField}
+                                component={InputField}
                                 type="select"
                                 label={'Data de término'}>
                                     <option value="1">Jan</option>
@@ -147,7 +147,7 @@ class ExperienceForm extends Component{
                     <Col>
                     <Field name="startYear"
                         placeholder="Ano inicial"
-                        component={TextField}
+                        component={InputField}
                         type="number" normalize={normalizeYear}/>
                     </Col>
                     {
@@ -155,7 +155,7 @@ class ExperienceForm extends Component{
                         <Col>
                         <Field name="endYear"
                             placeholder="Ano final"
-                            component={TextField}
+                            component={InputField}
                             type="number" normalize={normalizeYear}/>
                         </Col>)
                     }

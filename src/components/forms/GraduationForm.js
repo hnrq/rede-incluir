@@ -3,7 +3,7 @@ import {Field, reduxForm, formValueSelector} from 'redux-form';
 import {Form, Button, Row, Col, Modal} from 'react-bootstrap';
 import {startAddGraduation, startEditGraduation, startDeleteGraduation} from '../../actions';
 import {connect} from 'react-redux';
-import TextField from '../custom-bootstrap/TextField';
+import InputField from '../custom-bootstrap/InputField';
 
 class GraduationForm extends Component {
     constructor(props){
@@ -69,7 +69,7 @@ class GraduationForm extends Component {
                             <Field
                                 name="institution"
                                 type='text'
-                                component={TextField}
+                                component={InputField}
                                 label={"Instituição de Ensino"}
                                 placeholder={"Ex: PUC Minas"}/>
                         </Col>
@@ -79,7 +79,7 @@ class GraduationForm extends Component {
                             <Field
                                 name="graduation"
                                 type='text'
-                                component={TextField}
+                                component={InputField}
                                 label={"Formação"}
                                 placeholder={"Ex: Bacharelado"}/>
                         </Col>
@@ -88,7 +88,7 @@ class GraduationForm extends Component {
                         <Col>
                             <Field
                                 name="area"
-                                component={TextField}
+                                component={InputField}
                                 type="text"
                                 label={"Área de estudo"}
                                 placeholder={"Ex: Direito"}/>
@@ -100,7 +100,7 @@ class GraduationForm extends Component {
                                 name="startYear"
                                 label="Do ano de"
                                 placeholder="Ano inicial"
-                                component={TextField}
+                                component={InputField}
                                 type="number"
                                 normalize={normalizeYear}/>
                         </Col>
@@ -109,7 +109,7 @@ class GraduationForm extends Component {
                                 name="endYear"
                                 placeholder="Ano de término"
                                 label="Até (ou previsão)"
-                                component={TextField}
+                                component={InputField}
                                 type="number"
                                 normalize={normalizeYear}/>
                         </Col>

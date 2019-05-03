@@ -36,6 +36,15 @@
         top: 3vh;
         right: 25px;
     }
+
+    & .disabilities {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 3vh;
+        margin-bottom: .5rem;
+        left: 25px;
+    }
 }
 
 @media(max-width:480px) {
@@ -43,6 +52,10 @@
         text-align: center;
 
         .edit-profile {
+            position: initial;
+        }
+
+        .disabilities {
             position: initial;
         }
     }

@@ -1,12 +1,9 @@
-import {ADD_USER_INFO, ADD_EXPERIENCE, ADD_PROFILE_PICTURE, ADD_GRADUATION, DELETE_EXPERIENCE, DELETE_GRADUATION} from "../actions/types";
+import {ADD_USER_INFO, ADD_EXPERIENCE, ADD_PROFILE_PICTURE, ADD_GRADUATION, DELETE_EXPERIENCE, DELETE_GRADUATION, REMOVE_PROFILE_PICTURE} from "../actions/types";
 
 export default function userInfoReducer(state = {}, action) {
     switch (action.type) {
         case ADD_USER_INFO:
-            return {
-                ...state,
-                ...action.payload
-            };
+            return action.payload;
         case ADD_EXPERIENCE:
             return {
                 ...state,
@@ -44,6 +41,10 @@ export default function userInfoReducer(state = {}, action) {
                 ...state,
                 profilePic: action.payload
             }
+        
+        case REMOVE_PROFILE_PICTURE:
+            delete state.profilePic;
+            return state;
         default:
             return state;
     }
