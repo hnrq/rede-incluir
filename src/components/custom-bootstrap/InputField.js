@@ -15,12 +15,13 @@ export default class InputField extends Component {
             type
         } = this.props;
         const validationState = (touched && (error && "error")) || ((warning && "warning") || null);
+        const selectStyles = {control: (base) => !!validationState ? {...base,borderColor: '#dc3545'} : base};
         switch (type) {
             case 'password':
                 return (<PasswordInput isInvalid={!!validationState} {...input} {...this.props}/>);
             case 'radio':
             case 'checkbox':
-                return (<Form.Check
+                return (<Form.Check.Input
                     isInvalid={!!validationState}
                     type={type}
                     {...input}
@@ -46,6 +47,7 @@ export default class InputField extends Component {
                 return (<SelectMultiple
                     isInvalid={!!validationState}
                     { ...input }
+                    styles={selectStyles}
                     isMulti
                     closeMenuOnSelect={false}
                     { ...this.props }/>);
@@ -70,17 +72,27 @@ export default class InputField extends Component {
                 touched
             },
             type,
-            label
+            label,
+            labellink,
+            className
         } = this.props;
 
         let message;
 
-        if (touched && (error || warning)) {
-            message = <Form.Control.Feedback type="invalid">{error || warning}</Form.Control.Feedback>;
+        if (touched && (error || warning)){
+            if(type === 'select-multiple') message = <div className="invalid-feedback-select-multiple">{error || warning}</div>
+            else message = <Form.Control.Feedback type="invalid">{error || warning}</Form.Control.Feedback>;
         }
-        return (
+        if (type === 'checkbox' || type === 'radio'){
+            return (<Form.Check type={type}>
+                {this.renderForm()}
+                <Form.Check.Label>{label}{labellink}</Form.Check.Label>
+                {message}
+            </Form.Check>);
+        }
+        else return (
             <Form.Group
-                className={`${this.props.className} ${type === 'password'
+                className={`${className ? className : ''} ${type === 'password'
                 ? 'inner-addon right-addon'
                 : ''}`}
                 style={this.props.style}>

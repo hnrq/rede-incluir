@@ -6,7 +6,7 @@ RFReactSelect.defaultProps = {
     className: ""
 };
 
-export default function RFReactSelect({input, options, isMulti, className}) {
+export default function RFReactSelect({input, options, isMulti, className, styles}) {
     const {name, value, onBlur, onChange, onFocus} = input;
     const transformedValue = transformValue(value, options, isMulti);
     return (<Select
@@ -15,6 +15,7 @@ export default function RFReactSelect({input, options, isMulti, className}) {
         value={transformedValue}
         isMulti={isMulti}
         options={options}
+        styles={styles}
         onChange={isMulti
         ? isMultiChangeHandler(onChange)
         : singleChangeHandler(onChange)}

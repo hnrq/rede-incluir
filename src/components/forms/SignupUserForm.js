@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import {Field, reduxForm,formValueSelector} from 'redux-form';
-import {connect} from 'react-redux'; 
+import {Field, reduxForm, formValueSelector} from 'redux-form';
+import {connect} from 'react-redux';
 import {Form, Button, Row, Col} from 'react-bootstrap';
 import InputField from '../custom-bootstrap/InputField';
 import {signUp} from '../../firebase/auth';
 import {disabilities} from '../../utils/Disabilities';
+import { createTextMask } from 'redux-form-input-masks';
 
-class SignupForm extends Component {
+class SignupUserForm extends Component {
     submit = (values) => signUp(values);
 
     render() {
@@ -21,7 +22,8 @@ class SignupForm extends Component {
                                 name="firstName"
                                 type='text'
                                 component={InputField}
-                                label="Nome" placeholder="Ex.: John"/>
+                                label="Nome"
+                                placeholder="Ex.: John"/>
                         </Col>
                         <Col>
                             <Field
@@ -34,16 +36,20 @@ class SignupForm extends Component {
                     </Row>
                     <Row>
                         <Col>
-                            <Field 
-                            name="email" 
-                            type='email' 
-                            component={InputField} 
-                            label="E-mail" placeholder="Ex.: johndoe@email.com"/>
+                            <Field
+                                name="email"
+                                type='email'
+                                component={InputField}
+                                label="E-mail"
+                                placeholder="Ex.: johndoe@email.com"/>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
-                            <Field style={{marginBottom:5}}
+                            <Field
+                                style={{
+                                marginBottom: 5
+                            }}
                                 name="disabilities"
                                 closeMenuOnSelect={false}
                                 type='select-multiple'
@@ -62,17 +68,19 @@ class SignupForm extends Component {
                                 label={"Possuo diagnóstico de patologia listada no CID10"}/>
                         </Col>
                     </Row>
-                    {this.props.hasCID10 ? <Row>
-                        <Col>
-                            <Field
-                                name="cid10"
-                                component={InputField}
-                                options={disabilities}
-                                normalize={normalizeCID10}
-                                label="Código CID10"
-                                placeholder="Ex.: F41"/>
-                        </Col>
-                    </Row> : null}
+                    {this.props.hasCID10
+                        ? <Row>
+                                <Col>
+                                    <Field
+                                        name="cid10"
+                                        component={InputField}
+                                        options={disabilities}
+                                        label="Código CID10"
+                                        {...cid10Mask}
+                                        placeholder="Ex.: F41"/>
+                                </Col>
+                            </Row>
+                        : null}
                     <Row>
                         <Col>
                             <Field
@@ -91,11 +99,17 @@ class SignupForm extends Component {
     }
 };
 
-const normalizeCID10 = (value, previousValue) => {
-    if (value.length > 3) 
-        return previousValue;
-    return value;
-}
+const maskDefinitions = {
+    9: {
+        regExp: /[0-9]/
+    },
+    A: {
+        regExp: /[A-Za-z]/,
+        transform: char => char.toUpperCase()
+    }
+};
+
+const cid10Mask = createTextMask({pattern: 'A99',maskDefinitions,guide:false})
 
 const validate = values => {
     const errors = {}
@@ -105,6 +119,10 @@ const validate = values => {
         errors.lastName = 'Campo obrigatório.';
     if (!values.email) 
         errors.email = 'Campo obrigatório.';
+    if(!values.disabilities) 
+        errors.disabilities = 'Selecione pelo menos uma deficiência.'
+    if(values.disabilities && values.disabilities.length === 0)
+        errors.disabilities = 'Selecione pelo menos uma deficiência.'
     else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) 
         errors.email = 'Email Inválido';
     if (!values.password) 
@@ -114,9 +132,9 @@ const validate = values => {
     return errors;
 }
 
-const selector = formValueSelector('signup');
+const selector = formValueSelector('signupUser');
 
 export default connect(state => {
     const hasCID10 = selector(state, 'hasCID10');
     return {hasCID10};
-})(reduxForm({form: 'signup', validate})(SignupForm));
+})(reduxForm({form: 'signupUser', validate})(SignupUserForm));

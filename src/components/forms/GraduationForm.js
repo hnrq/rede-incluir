@@ -39,9 +39,8 @@ class GraduationForm extends Component {
         delete data.endMonth;
         delete data.endYear;
         delete data.type;
-
         if (editMode) editGraduation(data, values.id);
-        else addGraduation(data, values.id);
+        else addGraduation(data);
         closeModal();
     }
 

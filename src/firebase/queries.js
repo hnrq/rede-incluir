@@ -1,20 +1,24 @@
 import {firebaseRef} from './';
 
-export const editProfile = (userInfo,uid) => 
-    firebaseRef.child(`users/${uid}`)
+export const editProfile = (userInfo, uid) => firebaseRef
+    .child(`users/${uid}`)
     .update(userInfo);
 
-export const saveExperience = (experience,uid) =>
-    firebaseRef.child(`users/${uid}/experiences`)
+export const saveExperience = (experience, uid) => firebaseRef
+    .child(`users/${uid}/experiences`)
     .push(experience)
 
-export const editExperience = (experience, uid, experienceId) => 
-    firebaseRef.child(`users/${uid}/experiences/${experienceId}`)
+export const editExperience = (experience, uid, experienceId) => firebaseRef
+    .child(`users/${uid}/experiences/${experienceId}`)
     .update(experience);
 
-export const deleteExperience = (uid, experienceId) => 
-    firebaseRef.child(`users/${uid}/experiences/${experienceId}`)
+export const deleteExperience = (uid, experienceId) => firebaseRef
+    .child(`users/${uid}/experiences/${experienceId}`)
     .remove();
+
+export const saveInfo = (account, uid, isCompany) => firebaseRef
+    .child(`users/${uid}`)
+    .set(isCompany ? {...account,isCompany} : account);
 
 export const saveGraduation = (graduation, uid) => firebaseRef
     .child(`users/${uid}/graduations`)
@@ -27,5 +31,3 @@ export const editGraduation = (graduation, uid, graduationId) => firebaseRef
 export const deleteGraduation = (uid, graduationId) => firebaseRef
     .child(`users/${uid}/graduations/${graduationId}`)
     .remove();
-
-

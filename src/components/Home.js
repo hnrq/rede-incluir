@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import {Jumbotron} from 'react-bootstrap';
-import SignupForm from './forms/SignupForm';
+import SignupFormContainer from './forms/SignupFormContainer';
 import {withRouter} from 'react-router-dom';
 import { firebaseAuth } from '../firebase';
 
@@ -12,7 +12,7 @@ class Home extends Component{
     render(){
         return (
             <Jumbotron>
-               <SignupForm/>
+               <SignupFormContainer/>
             </Jumbotron>
         );
     }
