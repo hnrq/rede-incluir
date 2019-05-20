@@ -1,15 +1,16 @@
 import React,{Component} from "react";
 import {Field, reduxForm, formValueSelector} from "redux-form";
 import {Form,Button,Row,Col,Modal} from "react-bootstrap";
-import { startEditUserInfo } from "../../actions";
+import { startEditProfileInfo } from "../../actions";
 import { connect } from "react-redux";
 import InputField from "../custom-bootstrap/InputField";
 import Avatar from "../custom-bootstrap/Avatar";
 import {disabilities} from '../../utils/Disabilities';
+import {createTextMask} from 'redux-form-input-masks';
 
-class EditProfileForm extends Component{
+class EditUserForm extends Component{
     submit = (values) => {
-        this.props.editUserInfo(values);
+        this.props.editProfileInfo(values);
         if (this.props.closeModal) this.props.closeModal();
     }
 
@@ -77,9 +78,9 @@ class EditProfileForm extends Component{
                             name="cid10"
                             component={InputField}
                             options={disabilities}
-                            normalize={normalizeCID10}
                             label="Código CID10"
-                            placeholder="Ex.: F41"/>
+                            placeholder="Ex.: F41"
+                            {...cid10Mask}/>
                     </Col>
                 </Row> : null}
                 <Row>
@@ -117,16 +118,22 @@ const mapStateToProps = (state) => ({
     });
 
 const mapDispatchToProps = (dispatch) => ({
-    editUserInfo: (userInfo) => {
-        dispatch(startEditUserInfo(userInfo))
+    editProfileInfo: (userInfo) => {
+        dispatch(startEditProfileInfo(userInfo))
     },
 });
 
-const normalizeCID10 = (value, previousValue) => {
-    if (value.length > 3) 
-        return previousValue;
-    return value;
-}
+const maskDefinitions = {
+    9: {
+        regExp: /[0-9]/
+    },
+    A: {
+        regExp: /[A-Za-z]/,
+        transform: char => char.toUpperCase()
+    }
+};
+
+const cid10Mask = createTextMask({pattern: 'A99', maskDefinitions, guide: false})
 
 const validate = values => {
     const errors = {}
@@ -139,4 +146,4 @@ const validate = values => {
 export default connect(mapStateToProps, mapDispatchToProps)(reduxForm({
     form: "editProfile",
     validate
-})(EditProfileForm));
+})(EditUserForm));

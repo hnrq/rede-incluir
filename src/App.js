@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.scss';
 import {Provider} from 'react-redux';
 import Header from './components/Header';
-import {firebaseAuth} from './firebase';
+import {firebaseAuth,firebaseRef} from './firebase';
 import store from './store';
 import * as actions from './actions';
 import {Router} from 'react-router-dom';
@@ -14,16 +14,18 @@ import {createBrowserHistory} from 'history';
 import "react-placeholder/lib/reactPlaceholder.css";
 import 'rc-slider/assets/index.css';
 
-
 const history = createBrowserHistory();
 
 toast.configure()
 
 firebaseAuth.onAuthStateChanged((user) => {
     if (user){
-      store.dispatch(actions.login(user));
-      if(history.location.pathname === '/')
-        history.push(`/${user.uid}`);
+      firebaseRef.child(`users/${user.uid}`).once('value').then((doc) => {
+        const values = doc.val();
+        store.dispatch(actions.login({uid:user.uid,...values}));
+        if(history.location.pathname === '/')
+          history.push(`/${user.uid}`);      
+      });
     } 
     else store.dispatch(actions.logout());
 });

@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getUserInfo} from '../actions';
+import {getProfileInfo} from '../actions';
 import UserProfile from './UserProfile';
 import CompanyProfile from './CompanyProfile';
 
@@ -14,7 +14,7 @@ class Profile extends Component{
             showProfileModal:false,
             ready:false,
         }
-        props.getUserInfo(this.loadingReady);
+        props.getProfileInfo(this.loadingReady);
     }
 
     loadingReady = () => {
@@ -29,14 +29,14 @@ class Profile extends Component{
 }
 
 const mapStateToProps = (state) => ({
-    ...state.userInfo,
+    ...state.profileInfo,
     uid: state.auth.user
         ? state.auth.user.uid
         : null
 });
 
 const mapDispatchToProps = (dispatch,ownProps) => ({
-    getUserInfo: (ready) => dispatch(getUserInfo(ownProps.location.pathname.substr(1),ready))
+    getProfileInfo: (ready) => dispatch(getProfileInfo(ownProps.location.pathname.substr(1),ready))
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile));

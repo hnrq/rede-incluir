@@ -31,3 +31,15 @@ export const editGraduation = (graduation, uid, graduationId) => firebaseRef
 export const deleteGraduation = (uid, graduationId) => firebaseRef
     .child(`users/${uid}/graduations/${graduationId}`)
     .remove();
+
+export const saveJobOpportunity = (jobOpportunity, uid) => firebaseRef
+    .child(`users/${uid}/jobOpportunities`)
+    .push(jobOpportunity)
+
+export const editJobOpportunity = (jobOpportunity, uid, jobOpportunityId) => firebaseRef
+    .child(`users/${uid}/jobOpportunities/${jobOpportunityId}`)
+    .update(jobOpportunity);
+
+export const deleteJobOpportunity = (uid, jobOpportunityId) => firebaseRef
+    .child(`users/${uid}/jobOpportunities/${jobOpportunityId}`)
+    .remove();

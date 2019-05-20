@@ -1,8 +1,8 @@
-import {ADD_USER_INFO, ADD_EXPERIENCE, ADD_PROFILE_PICTURE, ADD_GRADUATION, DELETE_EXPERIENCE, DELETE_GRADUATION, REMOVE_PROFILE_PICTURE} from "../actions/types";
+import {ADD_PROFILE_INFO, ADD_EXPERIENCE, ADD_PROFILE_PICTURE, ADD_GRADUATION, DELETE_EXPERIENCE, DELETE_GRADUATION, REMOVE_PROFILE_PICTURE, ADD_JOB_OPPORTUNITY, DELETE_JOB_OPPORTUNITY} from "../actions/types";
 
-export default function userInfoReducer(state = {}, action) {
+export default function profileInfoReducer(state = {}, action) {
     switch (action.type) {
-        case ADD_USER_INFO:
+        case ADD_PROFILE_INFO:
             return action.payload;
         case ADD_EXPERIENCE:
             return {
@@ -16,8 +16,24 @@ export default function userInfoReducer(state = {}, action) {
                 }
             };
 
+        case ADD_JOB_OPPORTUNITY:
+            return {
+                ...state,
+                jobOpportunities: {
+                    ...state.jobOpportunities,
+                    [action.payload.id]: {
+                        ...action.payload,
+                        id: undefined
+                    }
+                }
+            };
+
         case DELETE_EXPERIENCE:
             delete state.experiences[action.payload.id];
+            return state;
+
+        case DELETE_JOB_OPPORTUNITY:
+            delete state.jobOpportunities[action.payload.id];
             return state;
         
         case ADD_GRADUATION:

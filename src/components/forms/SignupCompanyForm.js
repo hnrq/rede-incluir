@@ -11,9 +11,8 @@ import axios from 'axios';
 class SignupCompanyForm extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            showTerms: false
-        }
+        this.state = {showTerms: false};
+        axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados').then((response) => this.setState({provinces: response.data.sort((p1,p2) => p1.nome > p2.nome ? 1 : -1)}));
     }
 
     handleShowTerms = () => this.setState({showTerms: true});
@@ -23,6 +22,12 @@ class SignupCompanyForm extends Component {
     submit = (values) => {
         delete values.termsAndConditions;
         signUp(values, true);
+    }
+
+    componentDidUpdate(prevProps){
+        if(this.props.province !== prevProps.province) 
+            return axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${this.provinceField.options[this.provinceField.selectedIndex].getAttribute('data-id')}/municipios`)
+            .then((response) => ({cities: response.data}));
     }
 
     render() {
@@ -72,7 +77,7 @@ class SignupCompanyForm extends Component {
                         </Col>
                     </Row>
                     <Row>
-                        <Col md={4}>
+                        <Col md={6}>
                             <Field
                                 name="street"
                                 component={InputField}
@@ -80,7 +85,7 @@ class SignupCompanyForm extends Component {
                                 label="Endereço"
                                 placeholder="Ex.: Rua do Zé"/>
                         </Col>
-                        <Col md={2}>
+                        <Col md={3}>
                             <Field
                                 name="number"
                                 component={InputField}
@@ -96,14 +101,40 @@ class SignupCompanyForm extends Component {
                                 label="Bloco/Andar"
                                 placeholder="Ex.: 9º andar, Bloco 5"/>
                         </Col>
-                        <Col md={3}>
+                    </Row>
+                    <Row>
+                        <Col md={6}>
                             <Field
                                 name="neighborhood"
                                 component={InputField}
                                 type="text"
                                 label="Bairro"/>
                         </Col>
+                        <Col md={6}>
+                            <Field
+                                ref={(provinceField) => {this.provinceField = provinceField}}
+                                name="province"
+                                component={InputField}
+                                type="select"
+                                label="Cidade"
+                                placeholder="Selecione um estado..." onChange={this.getCities}>
+                                {this.state.provinces ? this.state.provinces.map((province) => <option key={province.id} data-id={province.id} value={province.sigla}>{province.nome}</option>) : null}
+                            </Field>
+                        </Col>
                     </Row>
+                    {this.props.province && this.state.cities ? 
+                        <Row>
+                            <Col>
+                                <Field
+                                    name="city"
+                                    component={InputField}
+                                    type="select-search"
+                                    label="Cidade"
+                                    options={this.state.cities.map(city => ({value:city.nome,label:city.nome}))}
+                                    placeholder="Ex.: Belo Horizonte">
+                                </Field>
+                            </Col>
+                        </Row> : null}
                     <Row>
                         <Col>
                             <Field
@@ -129,7 +160,6 @@ class SignupCompanyForm extends Component {
                                 }
                                 placeholder="No mínimo 6 caracteres"/>
                                 <div style={{width:'5px',height:'auto',display:'inline-block'}}/>
-                            
                         </Col>
                     </Row>
 
@@ -186,7 +216,7 @@ const asyncValidate = (values, dispatch) => {
                 dispatch(autofill('signupCompany','street',data.logradouro));
                 dispatch(autofill('signupCompany','city',data.localidade));
                 dispatch(autofill('signupCompany','neighborhood',data.bairro));
-                dispatch(autofill('signupCompany','state',data.uf));
+                dispatch(autofill('signupCompany','province',data.uf));
                 if(data.erro) {
                    const error = {zipCode: 'CEP inválido.'}; throw error;
                 }
@@ -198,5 +228,6 @@ const selector = formValueSelector('signupCompany');
 
 export default connect(state => {
     const zipCode = selector(state, 'zipCode');
-    return {zipCode};
+    const province = selector(state, 'province');
+    return {zipCode,province};
 })(reduxForm({form: 'signupCompany', validate, asyncValidate, asyncBlurFields: ['zipCode']})(SignupCompanyForm));

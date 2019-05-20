@@ -4,7 +4,7 @@ import {Container,Button,Modal} from 'react-bootstrap';
 import placeholder from '../images/ppic-placeholder.png';
 import backgroundPlaceholder from '../images/background-placeholder.png';
 import ExperienceForm from './forms/ExperienceForm';
-import EditProfileForm from './forms/EditProfileForm';
+import EditUserForm from './forms/EditUserForm';
 import ExperienceList from './List/ExperienceList';
 import GraduationList from './List/GraduationList';
 import ReactPlaceholder from 'react-placeholder';
@@ -144,7 +144,7 @@ class UserProfile extends Component{
                 <GraduationForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseGraduationModal}/>
             </Modal>
             <Modal size="lg" show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
-                <EditProfileForm initialValues={this.state.initialValues} closeModal={this.handleCloseProfileModal}/>
+                <EditUserForm initialValues={this.state.initialValues} closeModal={this.handleCloseProfileModal}/>
             </Modal>
             </>
             

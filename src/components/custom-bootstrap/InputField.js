@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Form} from 'react-bootstrap';
-import SelectMultiple from './SelectMultiple';
+import Select from './Select';
 import PasswordInput from './PasswordInput';
 
 export default class InputField extends Component {
@@ -36,6 +36,16 @@ export default class InputField extends Component {
                         {this.props.children}
                     </Form.Control>
                 );
+            case 'select-search':
+                return (
+                    <Select
+                    isInvalid={!!validationState}
+                    { ...input }
+                    styles={selectStyles}
+                    isMulti
+                    closeMenuOnSelect={false}
+                    { ...this.props }/>
+                );
             case 'textarea':
                 return (<Form.Control
                     isInvalid={!!validationState}
@@ -44,7 +54,7 @@ export default class InputField extends Component {
                     { ...this.props }
                     rows={4}/>);
             case 'select-multiple':
-                return (<SelectMultiple
+                return (<Select
                     isInvalid={!!validationState}
                     { ...input }
                     styles={selectStyles}

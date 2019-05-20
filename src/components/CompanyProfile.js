@@ -4,7 +4,7 @@ import {Container,Button,Modal} from 'react-bootstrap';
 import placeholder from '../images/ppic-placeholder.png';
 import backgroundPlaceholder from '../images/background-placeholder.png';
 import JobOpportunityForm from './forms/JobOpportunityForm';
-import EditProfileForm from './forms/EditProfileForm';
+import EditCompanyForm from './forms/EditCompanyForm';
 import JobOpportunityList from './List/JobOpportunityList';
 import ReactPlaceholder from 'react-placeholder';
 import {disabilities} from '../utils/Disabilities';
@@ -20,6 +20,10 @@ class CompanyProfile extends Component {
 
     handleShowJobOpportunityModal = () => {
         this.setState({showJobOpportunityModal: true});
+    }
+
+    handleCloseProfileModal = () => {
+    this.setState({showProfileModal: false});
     }
 
     handleShowProfileModal = () => {
@@ -108,7 +112,7 @@ class CompanyProfile extends Component {
                 <JobOpportunityForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseJobOpportunityModal}/>
             </Modal>
             <Modal size="lg" show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
-                <EditProfileForm initialValues={this.state.initialValues} closeModal={this.handleCloseProfileModal}/>
+                <EditCompanyForm initialValues={this.state.initialValues} closeModal={this.handleCloseProfileModal}/>
             </Modal>
             </>
             

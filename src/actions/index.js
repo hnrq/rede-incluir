@@ -1,6 +1,6 @@
 import * as types from './types';
 import {signOut} from '../firebase/auth';
-import {editProfile,saveExperience, editExperience, saveGraduation, editGraduation, deleteGraduation, deleteExperience} from '../firebase/queries';
+import * as query from '../firebase/queries';
 import {firebaseRef,storageRef} from '../firebase';
 import { toast } from 'react-toastify';
 
@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 export const login = (user) => ({type:types.LOGIN,user});
 export const logout = () => ({type:types.LOGOUT});
 
-export function getUserInfo(uid,ready) {
+export function getProfileInfo(uid,ready) {
     return (dispatch) => {
         return firebaseRef.child(`users/${uid}`).once('value').then((doc) => {
             var values = doc.val();
@@ -21,7 +21,7 @@ export function getUserInfo(uid,ready) {
                     const image = new File([blob], 'profile', {type: blob.type,lastModified: Date.now()});
                     const reader = new FileReader();
                     reader.onload = () =>  {
-                        dispatch(addUserInfo({...values,profilePic: reader.result}));
+                        dispatch(addProfileInfo({...values,profilePic: reader.result}));
                         ready();
                     }
                     reader.readAsDataURL(image);
@@ -29,7 +29,7 @@ export function getUserInfo(uid,ready) {
                 xhr.send();
             },(error) => {
                 dispatch(removeProfilePicture())
-                dispatch(addUserInfo({...values}));
+                dispatch(addProfileInfo({...values}));
                 ready();
             });
         });
@@ -61,9 +61,9 @@ export function addSearchResults(searchResults){
     }
 }
 
-export function addUserInfo(userInfo) {
+export function addProfileInfo(userInfo) {
     return {
-        type: types.ADD_USER_INFO,
+        type: types.ADD_PROFILE_INFO,
         payload: {
             ...userInfo
         }
@@ -96,7 +96,7 @@ export function addExperience(experience,id) {
 export function startAddExperience(experience) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return saveExperience(experience,uid).then((result)=>{
+        return query.saveExperience(experience,uid).then((result)=>{
             dispatch(addExperience(experience, result.key));
             toast.success("Experiência adicionada com sucesso.");
         },(error)=>{
@@ -108,7 +108,7 @@ export function startAddExperience(experience) {
 export function startEditExperience(experience,id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return editExperience(experience,uid,id).then((result)=>{
+        return query.editExperience(experience,uid,id).then((result)=>{
             dispatch(addExperience(experience, id));
             toast.success("Experiência editada com sucesso.");
         },(error)=>{
@@ -122,7 +122,7 @@ export function startEditExperience(experience,id) {
 export function startDeleteExperience(id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return deleteExperience(uid,id).then(()=>{
+        return query.deleteExperience(uid,id).then(()=>{
             dispatch(removeExperience(id));
             toast.success("Experiência excluída com sucesso.");
         });
@@ -137,8 +137,58 @@ export function removeExperience(id){
     }
 }
 
-export function startLogout(callback) {
+export function startAddJobOpportunity(jobOpportunity) {
     return (dispatch, getState) => {
+        const uid = getState().auth.user.uid;
+        return query.saveJobOpportunity(jobOpportunity, uid).then((result) => {
+            dispatch(addJobOpportunity(jobOpportunity, result.key));
+            toast.success("Vaga adicionada com sucesso.");
+        }, (error) => {
+            toast.error("Erro ao adicionar vaga.");
+        });
+    }
+}
+
+export function addJobOpportunity(jobOpportunity, id) {
+    return {
+        type: types.ADD_JOB_OPPORTUNITY,
+        payload: {
+            ...jobOpportunity,
+            id
+        }
+    };
+}
+
+export function startEditJobOpportunity(jobOpportunity, id) {
+    return (dispatch, getState) => {
+        const uid = getState().auth.user.uid;
+        return query.editJobOpportunity(jobOpportunity, uid, id).then((result) => {
+            dispatch(addJobOpportunity(jobOpportunity, id));
+            toast.success("Vaga editada com sucesso.");
+        }, (error) => {
+            toast.error("Erro ao editar vaga.");
+        });
+    }
+}
+
+export function startDeleteJobOpportunity(id) {
+    return (dispatch, getState) => {
+        const uid = getState().auth.user.uid;
+        return query.deleteJobOpportunity(uid, id).then(() => {
+            dispatch(removeJobOpportunity(id));
+            toast.success("Vaga excluída com sucesso.");
+        });
+    }
+}
+
+export function removeJobOpportunity(id) {
+    return {type: types.DELETE_JOB_OPPORTUNITY, payload: {
+            id
+        }}
+}
+
+export function startLogout(callback) {
+    return () => {
         return signOut().then((result) => {
             callback();
             return result;
@@ -148,13 +198,13 @@ export function startLogout(callback) {
     }
 }
 
-export function startEditUserInfo(userInfo) {
+export function startEditProfileInfo(userInfo) {
     return (dispatch, getState) => {
         const profilePic = userInfo.profilePic;
         delete userInfo.profilePic;
         Object.keys(userInfo).forEach(key => userInfo[key] === undefined ? delete userInfo[key] : '');
-        return editProfile({...userInfo},getState().auth.user.uid).then((result) => {
-            dispatch(addUserInfo({...userInfo}));
+        return query.editProfile({...userInfo},getState().auth.user.uid).then((result) => {
+            dispatch(addProfileInfo({...userInfo}));
             toast.success("Perfil editado com sucesso.");
             return dispatch(startUploadProfilePic(profilePic));
         });
@@ -196,7 +246,7 @@ export function addGraduation(graduation, id) {
 export function startAddGraduation(graduation) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return saveGraduation(graduation, uid).then((result) => {
+        return query.saveGraduation(graduation, uid).then((result) => {
             dispatch(addGraduation(graduation, result.key));
             toast.success("Formação adicionada com sucesso.");
         },(error) => {
@@ -208,7 +258,7 @@ export function startAddGraduation(graduation) {
 export function startEditGraduation(graduation, id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return editGraduation(graduation, uid, id).then(() => {
+        return query.editGraduation(graduation, uid, id).then(() => {
             dispatch(addGraduation(graduation, id));
             toast.success("Formação editada com sucesso.");
         },(error) => {
@@ -220,7 +270,7 @@ export function startEditGraduation(graduation, id) {
 export function startDeleteGraduation(id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return deleteGraduation(uid, id).then(() => {
+        return query.deleteGraduation(uid, id).then(() => {
             dispatch(removeGraduation(id));
             toast.success("Formação excluída com sucesso.");
         });
