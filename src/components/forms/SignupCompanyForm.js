@@ -24,11 +24,12 @@ class SignupCompanyForm extends Component {
         signUp(values, true);
     }
 
-    componentDidUpdate(prevProps){
-        if(this.props.province !== prevProps.province) 
-            return axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${this.provinceField.options[this.provinceField.selectedIndex].getAttribute('data-id')}/municipios`)
-            .then((response) => ({cities: response.data}));
-    }
+    // componentDidUpdate(prevProps){
+    //     console.log(this.props.province,prevProps.province)
+    //     if(this.props.province !== prevProps.province) 
+    //         axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${this.provinceField.options[this.provinceField.selectedIndex].getAttribute('data-id')}/municipios`)
+    //         .then((response) => this.setState({cities: response.data}));
+    // }
 
     render() {
         const {submitting, handleSubmit} = this.props;
