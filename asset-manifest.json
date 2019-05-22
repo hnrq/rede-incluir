@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.77aecf86.chunk.css",
-    "main.js": "/static/js/main.fd4d67e6.chunk.js",
-    "main.js.map": "/static/js/main.fd4d67e6.chunk.js.map",
-    "runtime~main.js": "/static/js/runtime~main.c5541365.js",
-    "runtime~main.js.map": "/static/js/runtime~main.c5541365.js.map",
-    "static/css/2.9060c2d0.chunk.css": "/static/css/2.9060c2d0.chunk.css",
-    "static/js/2.cfecbba8.chunk.js": "/static/js/2.cfecbba8.chunk.js",
-    "static/js/2.cfecbba8.chunk.js.map": "/static/js/2.cfecbba8.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.22f5ff7599000aa9f7df65cbdc8fcb69.js": "/precache-manifest.22f5ff7599000aa9f7df65cbdc8fcb69.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/2.9060c2d0.chunk.css.map": "/static/css/2.9060c2d0.chunk.css.map",
-    "static/css/main.77aecf86.chunk.css.map": "/static/css/main.77aecf86.chunk.css.map",
-    "static/media/background-placeholder.png": "/static/media/background-placeholder.e9d1a581.png",
-    "static/media/graduation-placeholder.svg": "/static/media/graduation-placeholder.d868be24.svg"
+    "main.css": "/rede-incluir/static/css/main.77aecf86.chunk.css",
+    "main.js": "/rede-incluir/static/js/main.42926229.chunk.js",
+    "main.js.map": "/rede-incluir/static/js/main.42926229.chunk.js.map",
+    "runtime~main.js": "/rede-incluir/static/js/runtime~main.0afc2318.js",
+    "runtime~main.js.map": "/rede-incluir/static/js/runtime~main.0afc2318.js.map",
+    "static/css/2.9060c2d0.chunk.css": "/rede-incluir/static/css/2.9060c2d0.chunk.css",
+    "static/js/2.2ffd0a77.chunk.js": "/rede-incluir/static/js/2.2ffd0a77.chunk.js",
+    "static/js/2.2ffd0a77.chunk.js.map": "/rede-incluir/static/js/2.2ffd0a77.chunk.js.map",
+    "index.html": "/rede-incluir/index.html",
+    "precache-manifest.9c85781d20317140ff455072ae0110eb.js": "/rede-incluir/precache-manifest.9c85781d20317140ff455072ae0110eb.js",
+    "service-worker.js": "/rede-incluir/service-worker.js",
+    "static/css/2.9060c2d0.chunk.css.map": "/rede-incluir/static/css/2.9060c2d0.chunk.css.map",
+    "static/css/main.77aecf86.chunk.css.map": "/rede-incluir/static/css/main.77aecf86.chunk.css.map",
+    "static/media/background-placeholder.png": "/rede-incluir/static/media/background-placeholder.e9d1a581.png",
+    "static/media/graduation-placeholder.svg": "/rede-incluir/static/media/graduation-placeholder.d868be24.svg"
   }
 }
