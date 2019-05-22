@@ -26,7 +26,7 @@ class JobOpportunity extends Component {
         const {editMode, closeModal, addJobOpportunity, editJobOpportunity} = this.props;
         delete values.id;
         if (editMode) 
-            editJobOpportunity(values, values.id)
+            editJobOpportunity(values, this.props.id)
         else 
             addJobOpportunity(values);
         closeModal();
@@ -130,7 +130,10 @@ class JobOpportunity extends Component {
         }
         onHide = {
             this.handleCloseDeleteModal
-        } > <Modal.Header closeButton/> <Modal.Body> <p>Deseja excluir esta vaga?</p> </Modal.Body>
+        } > <Modal.Header closeButton>
+                    <Modal.Title>Excluir vaga</Modal.Title>
+                </Modal.Header>
+                <Modal.Body> <p>Deseja excluir esta vaga?</p> </Modal.Body>
                 <Modal.Footer className="footer-button">
                     <Button disabled={submitting} variant="danger" onClick={() => {this.deleteJobOpportunity()}}>Excluir</Button> 
                     <Button disabled={submitting} 
@@ -156,7 +159,7 @@ const validate = values => {
     return errors;
 }
 
-const selector = formValueSelector('experience');
+const selector = formValueSelector('jobOpportunity');
 
 const mapDispatchToProps = (dispatch) => ({
     addJobOpportunity: (jobOpportunity) => dispatch(startAddJobOpportunity(jobOpportunity)),

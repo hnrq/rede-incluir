@@ -32,7 +32,8 @@ export default class InputField extends Component {
                         isInvalid={!!validationState}
                         { ...input }
                         as='select'
-                        { ...this.props }>
+                        { ...this.props }
+                        >
                         {this.props.children}
                     </Form.Control>
                 );
@@ -42,8 +43,6 @@ export default class InputField extends Component {
                     isInvalid={!!validationState}
                     { ...input }
                     styles={selectStyles}
-                    isMulti
-                    closeMenuOnSelect={false}
                     { ...this.props }/>
                 );
             case 'textarea':

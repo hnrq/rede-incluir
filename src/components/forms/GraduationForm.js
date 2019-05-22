@@ -131,7 +131,9 @@ class GraduationForm extends Component {
             {this.state.showDeleteModal ? 
                     <div className="fade modal-backdrop show" aria-hidden = "true"/> : null}
             <Modal centered className="modal-small" size="sm" show={this.state.showDeleteModal} onHide={this.handleCloseDeleteModal}>
-                <Modal.Header closeButton/>
+                <Modal.Header closeButton>
+                    <Modal.Title>Excluir formação</Modal.Title>
+                </Modal.Header>
                 <Modal.Body>
                     <p>Deseja excluir esta formação?</p>
                 </Modal.Body>

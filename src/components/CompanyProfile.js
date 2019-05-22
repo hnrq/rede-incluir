@@ -27,8 +27,8 @@ class CompanyProfile extends Component {
     }
 
     handleShowProfileModal = () => {
-        const {firstName,lastName,workLocation,occupation,desc,profilePic,disabilities,hasCID10,cid10} = this.props;
-        this.setState({showProfileModal: true,initialValues:{firstName,lastName,workLocation,occupation,desc,profilePic,hasCID10,disabilities,cid10}});
+        const {name,desc,profilePic,zipCode,street,number,complement,city,neighborhood,province} = this.props;
+        this.setState({showProfileModal: true,initialValues:{name,desc,profilePic,zipCode,street,number,city,complement,neighborhood,province}});
     }
 
     handleCloseJobOpportunityModal = () => {
@@ -42,30 +42,24 @@ class CompanyProfile extends Component {
         this.handleShowJobOpportunityModal();
     }
 
-    editJobOpportunity = (experience) => {
-        this.setState({editMode: true,initialValues:{
-            ...experience,
-            startMonth: experience.startDate.month,
-            startYear: experience.startDate.year,
-            endYear: (experience.endDate ? experience.endDate.year : null),
-            endMonth: (experience.endDate ? experience.endDate.month : null),
-        }});
+    editJobOpportunity = (jobOpportunity) => {
+        this.setState({editMode: true,initialValues:jobOpportunity});
         this.handleShowJobOpportunityModal();
     }
 
 
-    renderLists(isEditable){
+    renderLists(showItemAction){
         if(this.props.ready){
             return(
-                <Container className="card experiences">
-                    <JobOpportunityList title={"Vagas ofertadas"}  items={this.props.experiences} listAction={isEditable ? this.addJobOpportunity : null} listItemAction={isEditable ? this.editJobOpportunity : null}/>
+                <Container style={{padding:0}} className="card experiences">
+                    <JobOpportunityList showItemAction={showItemAction} title={"Vagas ofertadas"}  items={this.props.jobOpportunities} listAction={showItemAction ? this.addJobOpportunity : null} listItemAction={showItemAction ? this.editJobOpportunity : null}/>
                 </Container>
             )
         }
     }
 
     render(){
-        const {profilePic,backgroundPic,firstName,lastName,workLocation,occupation,desc,ready} = this.props;
+        const {profilePic,backgroundPic,name,workLocation,occupation,desc,ready} = this.props;
         let userDisabilities;
         if(this.props.disabilities)
             userDisabilities = disabilities.filter((disability) => this.props.disabilities.includes(disability.value)).map((disability,index) => <i className="disability" key={index}>{disability.label}</i>);
@@ -84,7 +78,7 @@ class CompanyProfile extends Component {
                     <div className="profile-info">
                         <div className="title">
                             <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={ready} style={{width:170,height:30}}>
-                                <h3 style={{fontWeight:'bold'}}>{firstName ? firstName + " " + lastName : ''}</h3>
+                                <h3 style={{fontWeight:'bold'}}>{name ? name : ''}</h3>
                             </ReactPlaceholder>
                         </div>
                         <ReactPlaceholder type='textRow' showLoadingAnimation={true} ready={ready} style={{width:250,height:20}}>

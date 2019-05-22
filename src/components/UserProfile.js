@@ -72,23 +72,28 @@ class UserProfile extends Component{
         this.handleShowGraduationModal();
     }
 
-    editGraduation = (experience) => {
+    editGraduation = (graduation) => {
+        console.log(graduation);
         this.setState({editMode: true,initialValues:{
-            ...experience,
-            startYear: experience.startDate.year,
-            endYear: experience.endDate.year
+            ...graduation,
+            startYear: graduation.startDate.year,
+            endYear: graduation.endDate.year
         }});
         this.handleShowGraduationModal();
     }
 
 
-    renderLists(isEditable){
+    renderLists(showItemAction){
         if(this.props.ready){
             return(
-                <Container className="card experiences">
-                    <ExperienceList title={"Experiências"}  items={this.props.experiences} listAction={isEditable ? this.addExperience : null} listItemAction={isEditable ? this.editExperience : null}/>
-                    <GraduationList title={"Formação acadêmica"} items={this.props.graduations} listAction={isEditable ? this.addGraduation : null} listItemAction={isEditable ? this.editGraduation : null}/>
+                <>
+                <Container style={{padding:0, marginBottom:'25px'}} className="card experiences">
+                    <ExperienceList title={"Experiências"}  items={this.props.experiences} listAction={showItemAction ? this.addExperience : null} showItemAction={showItemAction} listItemAction={showItemAction ? this.editExperience : null}/>
                 </Container>
+                <Container style={{padding:0}} className="card experiences">
+                    <GraduationList title={"Formação acadêmica"} items={this.props.graduations} listAction={showItemAction ? this.addGraduation : null} showItemAction={showItemAction} listItemAction={showItemAction ? this.editGraduation : null}/>
+                </Container>
+                </>
             )
         }
     }

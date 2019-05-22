@@ -10,3 +10,4 @@ export const REMOVE_PROFILE_PICTURE = 9;
 export const ADD_SEARCH_RESULTS = 10;
 export const ADD_JOB_OPPORTUNITY = 11;
 export const DELETE_JOB_OPPORTUNITY = 12;
+export const EDIT_PROFILE_INFO = 13;

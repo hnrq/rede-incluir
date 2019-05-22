@@ -30,9 +30,14 @@ class Search extends Component{
     render(){
         return(
             <Container style={{marginTop:'70px'}}>
-                <h3>Resultados da pesquisa {this.state.searchCriteria ? `para ${this.state.searchCriteria}` : null}</h3>
+                <h3>Resultados da pesquisa {this.state.searchCriteria ? `para "${this.state.searchCriteria}"` : null}</h3>
+                <h4>Usuários</h4>
                 <ReactPlaceholder type='media' rows={4} showLoadingAnimation={true} ready={this.state.ready}>
-                    <SearchList items={this.props.searchResults}/>
+                    <SearchList items={this.props.searchResults.users}/>
+                </ReactPlaceholder>
+                <h4>Empresas</h4>
+                <ReactPlaceholder type='media' rows={4} showLoadingAnimation={true} ready={this.state.ready}>
+                    <SearchList items={this.props.searchResults.companies}/>
                 </ReactPlaceholder>
             </Container>
         ) 

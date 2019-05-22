@@ -4,15 +4,16 @@ import {Form, Button, Row, Col, Modal} from 'react-bootstrap';
 import InputField from '../custom-bootstrap/InputField';
 import {signUp} from '../../firebase/auth';
 import {connect} from 'react-redux';
+import ReactDOM from 'react-dom';
 import {createTextMask} from 'redux-form-input-masks';
 import {validateCNPJ} from '../../utils/cnpjUtils';
+import {states} from '../../data/locale';
 import axios from 'axios';
 
 class SignupCompanyForm extends Component {
     constructor(props) {
         super(props);
         this.state = {showTerms: false};
-        axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados').then((response) => this.setState({provinces: response.data.sort((p1,p2) => p1.nome > p2.nome ? 1 : -1)}));
     }
 
     handleShowTerms = () => this.setState({showTerms: true});
@@ -24,12 +25,14 @@ class SignupCompanyForm extends Component {
         signUp(values, true);
     }
 
-    // componentDidUpdate(prevProps){
-    //     console.log(this.props.province,prevProps.province)
-    //     if(this.props.province !== prevProps.province) 
-    //         axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${this.provinceField.options[this.provinceField.selectedIndex].getAttribute('data-id')}/municipios`)
-    //         .then((response) => this.setState({cities: response.data}));
-    // }
+    componentDidUpdate(prevProps){
+        if(this.props.province !== prevProps.province) {
+            console.log(this.props);
+            const provinceField = ReactDOM.findDOMNode(this.provinceField).children[1];
+            axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${provinceField.options[provinceField.selectedIndex].getAttribute('data-id')}/municipios`)
+            .then((response) => this.setState({cities: response.data}));
+        }
+    }
 
     render() {
         const {submitting, handleSubmit} = this.props;
@@ -117,9 +120,9 @@ class SignupCompanyForm extends Component {
                                 name="province"
                                 component={InputField}
                                 type="select"
-                                label="Cidade"
+                                label="Estado"
                                 placeholder="Selecione um estado..." onChange={this.getCities}>
-                                {this.state.provinces ? this.state.provinces.map((province) => <option key={province.id} data-id={province.id} value={province.sigla}>{province.nome}</option>) : null}
+                                {states.sort((p1,p2) => p1.nome > p2.nome ? 1 : -1).map((province) => <option key={province.id} data-id={province.id} value={province.sigla}>{province.nome}</option>)}
                             </Field>
                         </Col>
                     </Row>

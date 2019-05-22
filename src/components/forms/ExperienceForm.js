@@ -41,7 +41,7 @@ class ExperienceForm extends Component{
         delete data.endMonth;
         delete data.endYear;
         delete data.type;
-
+        
         if(editMode) editExperience(data,values.id) 
         else addExperience(data);     
         closeModal();
@@ -178,7 +178,9 @@ class ExperienceForm extends Component{
             {this.state.showDeleteModal ? 
                     <div className="fade modal-backdrop show" aria-hidden = "true"/> : null}
             <Modal centered className="modal-small" size="sm" show={this.state.showDeleteModal} onHide={this.handleCloseDeleteModal}>
-                <Modal.Header closeButton/>
+                <Modal.Header closeButton>
+                    <Modal.Title>Excluir experiência</Modal.Title>
+                </Modal.Header>
                 <Modal.Body>
                     <p>Deseja excluir esta experiência?</p>
                 </Modal.Body>

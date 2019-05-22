@@ -10,7 +10,7 @@ export default class ExperienceList extends Component {
     editExperience = (initialValues,id) => this.props.listItemAction({...initialValues, id, action: null})
 
     render() {
-        const {title, listAction, type, items} = this.props;
+        const {title, listAction, type, items,showItemAction} = this.props;
         return (
             <div className="list">
                 <Row>
@@ -39,10 +39,10 @@ export default class ExperienceList extends Component {
                             info={getDateRange(item[1].startDate, item[1].endDate, item[1].isCurrentWork)}
                             extraInfo={item[1].workLocation}
                             id={item[0]}
+                            showItemAction={showItemAction}
                             action={() => this.editExperience(item[1],item[0])}
                             type={type}/>)
-                    : <i>Não há experiências</i>}
-                <hr/>
+                    : <i className='list-empty'>Não há experiências</i>}
             </div>
         )
     }

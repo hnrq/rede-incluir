@@ -29,7 +29,7 @@ export default class GraduationList extends Component {
     }
 
     render() {
-        const {title, listAction, type} = this.props;
+        const {title, listAction, type, showItemAction} = this.props;
         const items = this.getSortedItems();
         return (
             <div className="list">
@@ -56,10 +56,10 @@ export default class GraduationList extends Component {
                         picture={graduationPlaceholder}
                         info={getDateRange(item.startDate, item.endDate, item.isCurrentWork)}
                         id={item.id}
+                        showItemAction={showItemAction}
                         action={() => this.editGraduation(item, item.id)}
                         type={type}/>)
-                    : <i>Não há graduações</i>}
-                <hr/>
+                    : <i className="list-empty">Não há graduações</i>}
             </div>
         )
     }

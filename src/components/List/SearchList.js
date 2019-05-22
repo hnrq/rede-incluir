@@ -18,7 +18,7 @@ export default class SearchList extends Component {
                     ? Object
                         .entries(items)
                         .map((item) => <ListItem
-                            title={item[1].firstName + ' '+ item[1].lastName}
+                            title={item[1].isCompany ? item[1].name : item[1].firstName + ' '+ item[1].lastName}
                             key={item[0]}
                             to={item[0]}
                             subtitle={item[1].occupation}

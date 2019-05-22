@@ -23,7 +23,7 @@ class EditUserForm extends Component{
             </Modal.Header>
             <Modal.Body>
                 <Row>
-                    <Col sm={5} className="justify-content-md-center">
+                    <Col sm={5} md={5} lg={3} className="justify-content-md-center">
                         <Field
                             name="profilePic"
                             component={Avatar}
@@ -33,7 +33,7 @@ class EditUserForm extends Component{
                             withPreview
                         />
                     </Col>
-                    <Col  sm={7}>
+                    <Col sm={7} md={7} lg={9}>
                         <Field name = "firstName"
                         type = "text"
                         component = {InputField}

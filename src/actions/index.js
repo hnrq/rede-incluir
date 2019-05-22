@@ -45,8 +45,15 @@ export function startSearch(searchCriteria,ready){
             .forEach((searchResult) => {
                 delete searchResult[1].graduations;
                 delete searchResult[1].experiences;
-                if(searchResult[0] !== getState().auth.user.uid && searchResult[1].firstName.toLowerCase().includes(searchCriteria.toLowerCase()))
-                    searchResults = {...searchResults,[searchResult[0]]:searchResult[1]};
+                
+                if(searchResult[0] !== getState().auth.user.uid){
+                    if(searchResult[1].isCompany){
+                        if(searchResult[1].name.toLowerCase().includes(searchCriteria.toLowerCase()))
+                            searchResults = {...searchResults,companies:{...searchResults.companies,[searchResult[0]]:searchResult[1]}};
+                    }
+                    else if(searchResult[1].firstName.toLowerCase().includes(searchCriteria.toLowerCase()))
+                        searchResults = {...searchResults,users:{...searchResults.users,[searchResult[0]]:searchResult[1]}};
+                }
             });
             dispatch(addSearchResults(searchResults));
             ready();
@@ -64,6 +71,15 @@ export function addSearchResults(searchResults){
 export function addProfileInfo(userInfo) {
     return {
         type: types.ADD_PROFILE_INFO,
+        payload: {
+            ...userInfo
+        }
+    };
+}
+
+export function editProfileInfo(userInfo) {
+    return {
+        type: types.EDIT_PROFILE_INFO,
         payload: {
             ...userInfo
         }
@@ -188,7 +204,7 @@ export function removeJobOpportunity(id) {
 }
 
 export function startLogout(callback) {
-    return () => {
+    return (dispatch) => {
         return signOut().then((result) => {
             callback();
             return result;
@@ -204,7 +220,7 @@ export function startEditProfileInfo(userInfo) {
         delete userInfo.profilePic;
         Object.keys(userInfo).forEach(key => userInfo[key] === undefined ? delete userInfo[key] : '');
         return query.editProfile({...userInfo},getState().auth.user.uid).then((result) => {
-            dispatch(addProfileInfo({...userInfo}));
+            dispatch(editProfileInfo(userInfo));
             toast.success("Perfil editado com sucesso.");
             return dispatch(startUploadProfilePic(profilePic));
         });
