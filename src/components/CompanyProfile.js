@@ -3,9 +3,9 @@ import {withRouter} from 'react-router-dom';
 import {Container,Button,Modal} from 'react-bootstrap';
 import placeholder from '../images/ppic-placeholder.png';
 import backgroundPlaceholder from '../images/background-placeholder.png';
-import JobOpportunityForm from './forms/JobOpportunityForm';
+import VacancyForm from './forms/VacancyForm';
 import EditCompanyForm from './forms/EditCompanyForm';
-import JobOpportunityList from './List/JobOpportunityList';
+import VacancyList from './List/VacancyList';
 import ReactPlaceholder from 'react-placeholder';
 import {disabilities} from '../utils/Disabilities';
 
@@ -13,13 +13,22 @@ class CompanyProfile extends Component {
     constructor(props){
         super(props);
         this.state = {
-            showJobOpportunityModal:false,
+            showVacancyModal:false,
             showProfileModal:false,
+            showApplyModal:false,
         }
     }
 
-    handleShowJobOpportunityModal = () => {
-        this.setState({showJobOpportunityModal: true});
+    handleCloseApplyModal = () => {
+        this.setState({showApplyModal: false});
+    }
+
+    handleShowApplyModal = (vacancyId,vacancyTitle) => {
+        this.setState({showApplyModal: true,vacancyTitle,vacancyId});
+    }
+
+    handleShowVacancyModal = () => {
+        this.setState({showVacancyModal: true});
     }
 
     handleCloseProfileModal = () => {
@@ -31,28 +40,48 @@ class CompanyProfile extends Component {
         this.setState({showProfileModal: true,initialValues:{name,desc,profilePic,zipCode,street,number,city,complement,neighborhood,province}});
     }
 
-    handleCloseJobOpportunityModal = () => {
+    handleCloseVacancyModal = () => {
         this.setState({
-            showJobOpportunityModal: false
+            showVacancyModal: false
         });
     }
 
-    addJobOpportunity = () => {
+    addVacancy = () => {
         this.setState({editMode: false,initialValues:null});
-        this.handleShowJobOpportunityModal();
+        this.handleShowVacancyModal();
     }
 
-    editJobOpportunity = (jobOpportunity) => {
-        this.setState({editMode: true,initialValues:jobOpportunity});
-        this.handleShowJobOpportunityModal();
+    editVacancy = (vacancy) => {
+        this.setState({editMode: true,initialValues:vacancy});
+        this.handleShowVacancyModal();
     }
 
+    vacancyApply = () => {
+        this.props.vacancyApply(this.state.vacancyId,this.props.uid).then((response) => {
+            this.handleCloseApplyModal();
+        });
+    }
 
-    renderLists(showItemAction){
+    renderLists(showListAction){
+        var showItemAction = showListAction;
+        if(this.props.currentUser && !this.props.currentUser.isCompany)
+            showItemAction = true ;
+        const isCompany = this.props.currentUser ? this.props.currentUser.isCompany : null;
         if(this.props.ready){
             return(
                 <Container style={{padding:0}} className="card experiences">
-                    <JobOpportunityList showItemAction={showItemAction} title={"Vagas ofertadas"}  items={this.props.jobOpportunities} listAction={showItemAction ? this.addJobOpportunity : null} listItemAction={showItemAction ? this.editJobOpportunity : null}/>
+                    <VacancyList 
+                    showItemAction={showItemAction} 
+                    title={"Vagas ofertadas"}  
+                    items={this.props.vacancies} 
+                    listAction={showListAction ? this.addVacancy : null} 
+listItemAction = {
+    showItemAction
+        ? isCompany
+            ? this.editVacancy
+            : this.handleShowApplyModal : null
+}
+                    buttonText={isCompany ? null : "Candidatar"}/>
                 </Container>
             )
         }
@@ -102,11 +131,23 @@ class CompanyProfile extends Component {
                     </div>
             </Container>
             {this.renderLists(editable)}
-            <Modal size="lg" show={this.state.showJobOpportunityModal} onHide={this.handleCloseJobOpportunityModal}>
-                <JobOpportunityForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseJobOpportunityModal}/>
+            <Modal size="lg" show={this.state.showVacancyModal} onHide={this.handleCloseVacancyModal}>
+                <VacancyForm editMode={this.state.editMode} initialValues={this.state.initialValues} closeModal={this.handleCloseVacancyModal}/>
             </Modal>
             <Modal size="lg" show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
                 <EditCompanyForm initialValues={this.state.initialValues} closeModal={this.handleCloseProfileModal}/>
+            </Modal>
+            <Modal centered className="modal-small" size="sm" show={this.state.showApplyModal} onHide={this.handleCloseApplyModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Candidatar à vaga</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Deseja se candidatar à vaga de {this.state.vacancyTitle}?</p>
+                </Modal.Body>
+                <Modal.Footer className="footer-button">
+                    <Button variant="outline-secondary"  onClick={this.handleCloseApplyModal}>Não</Button>
+                    <Button variant="primary" onClick={this.vacancyApply}>Candidatar</Button>
+                </Modal.Footer>
             </Modal>
             </>
             

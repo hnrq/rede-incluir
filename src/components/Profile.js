@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
-import {getProfileInfo} from '../actions';
+import {getProfileInfo,startVacancyApply} from '../actions';
 import UserProfile from './UserProfile';
 import CompanyProfile from './CompanyProfile';
 
@@ -30,13 +30,15 @@ class Profile extends Component{
 
 const mapStateToProps = (state) => ({
     ...state.profileInfo,
+    currentUser:state.auth.user,
     uid: state.auth.user
         ? state.auth.user.uid
         : null
 });
 
 const mapDispatchToProps = (dispatch,ownProps) => ({
-    getProfileInfo: (ready) => dispatch(getProfileInfo(ownProps.location.pathname.substr(1),ready))
+    getProfileInfo: (ready) => dispatch(getProfileInfo(ownProps.location.pathname.substr(1),ready)),
+    vacancyApply: (vacancyId,userId) => dispatch(startVacancyApply(ownProps.location.pathname.substr(1),vacancyId,userId))
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Profile));

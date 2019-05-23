@@ -1,5 +1,5 @@
 export const getShortDate = (dateObject) => {
-    if (!!dateObject.month) {
+    if (dateObject.month !== undefined && dateObject.month !== null) {
         const monthNames = [
             "Jan",
             "Fev",
@@ -14,7 +14,7 @@ export const getShortDate = (dateObject) => {
             "Nov",
             "Dez"
         ];
-        return `${monthNames[dateObject.month - 1]} de ${dateObject.year}`
+        return `${monthNames[dateObject.month]} de ${dateObject.year}`
     } else 
         return dateObject.year;
     }

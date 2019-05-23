@@ -58,7 +58,7 @@
 
 .list {
     padding: 0px;
-
+    position:relative;
     & .list-empty {
         display: block;
         margin: 0px 20px 20px 20px;
@@ -76,6 +76,9 @@
     }
 
     & .list-action {
-        margin-top: 10px;
+        position: absolute;
+        top:10px;
+        right:20px;
+        margin-right:0px;
     }
 }

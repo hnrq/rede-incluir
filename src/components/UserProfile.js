@@ -10,6 +10,7 @@ import GraduationList from './List/GraduationList';
 import ReactPlaceholder from 'react-placeholder';
 import {disabilities} from '../utils/Disabilities';
 import GraduationForm from './forms/GraduationForm';
+import CurriculumPDF from './pdfExporter';
 
 class UserProfile extends Component{
     constructor(props){
@@ -18,6 +19,7 @@ class UserProfile extends Component{
             showExperienceModal:false,
             showGraduationModal:false,
             showProfileModal:false,
+            showCurriculumModal:false,
         }
     }
 
@@ -98,8 +100,16 @@ class UserProfile extends Component{
         }
     }
 
+    handleCloseCurriculumModal = () => {
+        this.setState({showCurriculumModal: false});
+    }
+
+    handleShowCurriculumModal = () => {
+        this.setState({showCurriculumModal: true});
+    }
+
     render(){
-        const {profilePic,backgroundPic,firstName,lastName,workLocation,occupation,desc,ready} = this.props;
+        const {profilePic,backgroundPic,firstName,lastName,workLocation,occupation,desc,ready,cid10} = this.props;
         let userDisabilities;
         if(this.props.disabilities)
             userDisabilities = disabilities.filter((disability) => this.props.disabilities.includes(disability.value)).map((disability,index) => <i className="disability" key={index}>{disability.label}</i>);
@@ -130,9 +140,15 @@ class UserProfile extends Component{
                         <ReactPlaceholder type='text' rows={3} showLoadingAnimation={true} ready={ready} style={{width:170,height:30}}>
                             <div className="disabilities">
                                 {userDisabilities}
+                                {cid10 ? <i className="disability">CID10: {cid10}</i> : null}
                             </div>
                         </ReactPlaceholder>
-                        {editable && ready ? <Button className="edit-profile" onClick={this.handleShowProfileModal}>Editar Perfil</Button> : null}
+                        {editable && ready ? 
+                            <>
+                                <Button className="edit-profile" onClick={this.handleShowProfileModal}>Editar Perfil</Button>
+                                <Button className="edit-profile" onClick={this.handleShowCurriculumModal}>Exportar para PDF</Button>
+                            </>
+                        : null}
                         <hr/>
                         <div className="desc" style={{textAlign:'justify'}}>
                             <ReactPlaceholder type='text' rows={8} showLoadingAnimation={true} ready={ready} style={{height:200}}>
@@ -150,6 +166,12 @@ class UserProfile extends Component{
             </Modal>
             <Modal size="lg" show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
                 <EditUserForm initialValues={this.state.initialValues} closeModal={this.handleCloseProfileModal}/>
+            </Modal>
+            <Modal size="lg" show={this.state.showCurriculumModal} onHide={this.handleCloseCurriculumModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Curriculo em PDF</Modal.Title>
+                </Modal.Header>
+                <CurriculumPDF {...this.props}/>
             </Modal>
             </>
             

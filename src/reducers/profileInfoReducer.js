@@ -38,8 +38,8 @@ export default function profileInfoReducer(state = {}, action) {
         case ADD_JOB_OPPORTUNITY:
             return {
                 ...state,
-                jobOpportunities: {
-                    ...state.jobOpportunities,
+                vacancies: {
+                    ...state.vacancies,
                     [action.payload.id]: {
                         ...action.payload,
                         id: undefined
@@ -52,7 +52,7 @@ export default function profileInfoReducer(state = {}, action) {
             return state;
 
         case DELETE_JOB_OPPORTUNITY:
-            delete state.jobOpportunities[action.payload.id];
+            delete state.vacancies[action.payload.id];
             return state;
 
         case ADD_GRADUATION:

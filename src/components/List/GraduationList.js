@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import ListItem from './ListItem';
-import {Row, Col} from 'react-bootstrap';
 import {getDateRange} from '../../utils/DateUtils'
 import graduationPlaceholder from '../../images/graduation-placeholder.svg';
 
@@ -17,7 +16,8 @@ export default class GraduationList extends Component {
 
     getSortedItems = () => {
         const {items} = this.props;
-        if(!items) return;
+        if (!items) 
+            return;
         var sortableItems = Object
             .keys(items)
             .map((key) => ({
@@ -33,21 +33,12 @@ export default class GraduationList extends Component {
         const items = this.getSortedItems();
         return (
             <div className="list">
-                <Row>
-                    <Col>
-                        <h3 className="list-title">{title}</h3>
-                    </Col>
-                    {listAction
-                        ? <Col
-                                style={{
-                                textAlign: 'right'
-                            }}>
-                                <i className="btn icon-button list-action" onClick={listAction}>
-                                    < FontAwesomeIcon icon={faPlus}/></i>
-                            </Col>
-                        : null
-}
-                </Row>
+                <h3 className="list-title">{title}</h3>
+                {listAction
+                    ? <i className="btn icon-button list-action" onClick={listAction}>
+                            < FontAwesomeIcon icon={faPlus}/></i>
+                    : null
+                }  
                 {!!this.props.items
                     ? items.map((item) => <ListItem
                         title={item.institution}

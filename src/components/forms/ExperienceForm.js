@@ -61,7 +61,7 @@ class ExperienceForm extends Component{
             <>
             <Form onSubmit={handleSubmit(this.submit)}>
             <Modal.Header closeButton>
-                <Modal.Title>{editMode ? 'Editar' : 'Adicionar'} experiência</Modal.Title>
+                <Modal.Title>{editMode ? 'Editar ' : 'Adicionar '} experiência</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Row>

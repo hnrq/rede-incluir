@@ -36,6 +36,20 @@ export function getProfileInfo(uid,ready) {
     }
 }
 
+export function startVacancyApply(companyId,vacancyId,userId){
+    return(dispatch,getState) => {
+        return query.fetchVacancyCandidates(companyId,vacancyId).then((snapshot)=>{
+            const data = snapshot.val();
+            if(data && userId in data)
+                return toast.error('Você já se candidatou à esta vaga.');
+            else 
+                return query.vacancyApply(companyId,vacancyId,userId).then(()=>{
+                    return toast.success('Candidatura cadastrada com sucesso!');
+                });
+        });
+    }
+}
+
 export function startSearch(searchCriteria,ready){
     return(dispatch,getState) => {
         var searchResults = {};
@@ -153,11 +167,11 @@ export function removeExperience(id){
     }
 }
 
-export function startAddJobOpportunity(jobOpportunity) {
+export function startAddVacancy(vacancy) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.saveJobOpportunity(jobOpportunity, uid).then((result) => {
-            dispatch(addJobOpportunity(jobOpportunity, result.key));
+        return query.saveVacancy(vacancy, uid).then((result) => {
+            dispatch(addVacancy(vacancy, result.key));
             toast.success("Vaga adicionada com sucesso.");
         }, (error) => {
             toast.error("Erro ao adicionar vaga.");
@@ -165,21 +179,21 @@ export function startAddJobOpportunity(jobOpportunity) {
     }
 }
 
-export function addJobOpportunity(jobOpportunity, id) {
+export function addVacancy(vacancy, id) {
     return {
         type: types.ADD_JOB_OPPORTUNITY,
         payload: {
-            ...jobOpportunity,
+            ...vacancy,
             id
         }
     };
 }
 
-export function startEditJobOpportunity(jobOpportunity, id) {
+export function startEditVacancy(vacancy, id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.editJobOpportunity(jobOpportunity, uid, id).then((result) => {
-            dispatch(addJobOpportunity(jobOpportunity, id));
+        return query.editVacancy(vacancy, uid, id).then((result) => {
+            dispatch(addVacancy(vacancy, id));
             toast.success("Vaga editada com sucesso.");
         }, (error) => {
             toast.error("Erro ao editar vaga.");
@@ -187,17 +201,17 @@ export function startEditJobOpportunity(jobOpportunity, id) {
     }
 }
 
-export function startDeleteJobOpportunity(id) {
+export function startDeleteVacancy(id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.deleteJobOpportunity(uid, id).then(() => {
-            dispatch(removeJobOpportunity(id));
+        return query.deleteVacancy(uid, id).then(() => {
+            dispatch(removeVacancy(id));
             toast.success("Vaga excluída com sucesso.");
         });
     }
 }
 
-export function removeJobOpportunity(id) {
+export function removeVacancy(id) {
     return {type: types.DELETE_JOB_OPPORTUNITY, payload: {
             id
         }}

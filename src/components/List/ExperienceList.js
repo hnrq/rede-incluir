@@ -2,32 +2,28 @@ import React, {Component} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlus} from '@fortawesome/free-solid-svg-icons';
 import ListItem from './ListItem';
-import {Row, Col} from 'react-bootstrap';
 import {getDateRange} from '../../utils/DateUtils'
 
 export default class ExperienceList extends Component {
 
-    editExperience = (initialValues,id) => this.props.listItemAction({...initialValues, id, action: null})
+    editExperience = (initialValues, id) => this
+        .props
+        .listItemAction({
+            ...initialValues,
+            id,
+            action: null
+        })
 
     render() {
-        const {title, listAction, type, items,showItemAction} = this.props;
+        const {title, listAction, type, items, showItemAction} = this.props;
         return (
             <div className="list">
-                <Row>
-                    <Col>
                         <h3 className="list-title">{title}</h3>
-                    </Col>
                     {listAction
-                        ? <Col
-                                style={{
-                                textAlign: 'right'
-                            }}>
-                                <i className="btn icon-button list-action" onClick={listAction}>
-                                    <FontAwesomeIcon icon={faPlus}/></i>
-                            </Col>
+                        ? <i className="btn icon-button list-action" onClick={listAction}>
+                                <FontAwesomeIcon icon={faPlus}/></i>
                         : null
 }
-                </Row>
                 {!!items
                     ? Object
                         .entries(items)
@@ -40,7 +36,7 @@ export default class ExperienceList extends Component {
                             extraInfo={item[1].workLocation}
                             id={item[0]}
                             showItemAction={showItemAction}
-                            action={() => this.editExperience(item[1],item[0])}
+                            action={() => this.editExperience(item[1], item[0])}
                             type={type}/>)
                     : <i className='list-empty'>Não há experiências</i>}
             </div>
