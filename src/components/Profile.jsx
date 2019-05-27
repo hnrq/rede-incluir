@@ -14,7 +14,20 @@ class Profile extends Component{
             showProfileModal:false,
             ready:false,
         }
-        props.getProfileInfo(this.loadingReady);
+    }
+
+    componentDidUpdate(prevProps){
+        if(this.props.location.pathname !== prevProps.location.pathname){
+            this.setState({ready:false});
+            this.props.getProfileInfo(this.loadingReady);
+        }
+    }
+    componentDidMount(prevProps){
+        this.props.getProfileInfo(this.loadingReady);
+    }
+
+    componentWillUnmount(){
+        this.loadingReady = () => {};
     }
 
     loadingReady = () => {

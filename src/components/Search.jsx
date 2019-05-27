@@ -12,16 +12,28 @@ class Search extends Component{
         super(props);
         this.state = {
             searchCriteria: null,
+            searchResults: null,
             ready : false,
         }
     }
 
-    componentDidUpdate(){
+    componentDidMount(){
         const values = this.props.location.state;
-        const searchCriteria = decodeURI(values.query)
+        const searchCriteria = decodeURI(values.query);
         this.setState({searchCriteria});
         this.props.search(searchCriteria,this.loadingReady);
     }
+
+    componentDidUpdate(prevProps){
+        const values = this.props.location.state;
+        const searchCriteria = decodeURI(values.query);
+        if(this.state.searchCriteria !== searchCriteria){
+            this.setState({searchCriteria,ready: false});
+            this.props.search(searchCriteria,this.loadingReady);
+        }
+    }
+
+    
 
     loadingReady = () => {
         this.setState({ready: true});

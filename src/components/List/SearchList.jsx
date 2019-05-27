@@ -20,12 +20,13 @@ export default class SearchList extends Component {
                         .map((item) => <ListItem
                             title={item[1].isCompany ? item[1].name : item[1].firstName + ' '+ item[1].lastName}
                             key={item[0]}
+                            picture={item[1].profilePic ? item[1].profilePic : placeholder}
                             to={item[0]}
                             subtitle={item[1].occupation}
-                            picture={placeholder}
                             info={item[1].workLocation}
                             id={item[0]}
-                            type={type}/>)
+                            type={type}/>
+                        )
                     : <i>A pesquisa não gerou resultados.</i>}
                 <hr/>
             </div>

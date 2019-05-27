@@ -1,84 +1,182 @@
 import * as types from './types';
 import {signOut} from '../firebase/auth';
 import * as query from '../firebase/queries';
-import {firebaseRef,storageRef} from '../firebase';
-import { toast } from 'react-toastify';
+import {storageRef} from '../firebase';
+import {toast} from 'react-toastify';
 
+export const login = (user) => ({type: types.LOGIN, user});
+export const logout = () => ({type: types.LOGOUT});
 
-export const login = (user) => ({type:types.LOGIN,user});
-export const logout = () => ({type:types.LOGOUT});
-
-export function getProfileInfo(uid,ready) {
+export function getProfileInfo(uid, ready) {
     return (dispatch) => {
-        return firebaseRef.child(`users/${uid}`).once('value').then((doc) => {
-            var values = doc.val();
-            return storageRef.child(`users/${uid}/profile-picture`).getDownloadURL().then((downloadURL) => {
+        return query.fetchUser(uid).then((doc) => {
+                var values = doc.val();
+                return storageRef
+                    .child(`users/${uid}/profile-picture`)
+                    .getDownloadURL()
+                    .then((downloadURL) => {
+                        let xhr = new XMLHttpRequest();
+                        xhr.open('GET', downloadURL);
+                        xhr.responseType = 'blob';
+                        xhr.onload = () => {
+                            const blob = xhr.response;
+                            const image = new File([blob], 'profile', {
+                                type: blob.type,
+                                lastModified: Date.now()
+                            });
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                dispatch(addProfileInfo({
+                                    ...values,
+                                    profilePic: reader.result
+                                }));
+                                ready();
+                            }
+                            reader.readAsDataURL(image);
+                        }
+                        xhr.send();
+                    }, (error) => {
+                        dispatch(removeProfilePicture())
+                        dispatch(addProfileInfo({
+                            ...values
+                        }));
+                        ready();
+                    });
+            });
+    }
+}
+
+export function startVacancyApply(companyId, vacancyId, userId) {
+    return (dispatch, getState) => {
+        return query
+            .fetchVacancyCandidates(companyId, vacancyId)
+            .then((snapshot) => {
+                const data = snapshot.val();
+                if (data && userId in data) 
+                    return toast.error('Você já se candidatou à esta vaga.');
+                else 
+                    return query
+                        .vacancyApply(companyId, vacancyId, userId)
+                        .then(() => {
+                            return toast.success('Candidatura cadastrada com sucesso!');
+                        });
+                }
+            );
+    }
+}
+
+export function getVacancyCandidates(userIds) {
+    return (dispatch, getState) => {
+        var result;
+        const ids = Object.entries(userIds);
+        ids.forEach((user,index) => {
+            query.fetchUser(user[0]).then((snapshot) => {
+                result = {...result,[user[0]]:snapshot.val()}
+                if(index === ids.length-1){
+                    dispatch(addVacancyApplicants(result));
+                }
+            })
+        });
+        
+    }
+}
+
+export function addVacancyApplicants(applicants) {
+    return {
+        type: types.ADD_VACANCY_CANDIDATES,
+        payload: {...applicants}
+    };
+}
+
+export function startSearch(searchCriteria, ready) {
+    return (dispatch, getState) => {
+        var searchResults = {};
+        query.fetchUsers().then((snapshot) => {
+                const values = Object.entries(snapshot.val());
+                values.forEach((searchResult, index) => {
+                    delete searchResult[1].graduations;
+                    delete searchResult[1].experiences;
+
+                    if (searchResult[0] !== getState().auth.user.uid) {
+                        if (searchResult[1].name
+                            ? searchResult[1].name.toLowerCase().includes(searchCriteria.toLowerCase())
+                            : (searchResult[1].firstName.toLowerCase().includes(searchCriteria.toLowerCase()) || searchResult[1].lastName.toLowerCase().includes(searchCriteria.toLowerCase()))) {
+                            getProfileImage(searchResult[0]).then((result) => {
+                                dispatch(addSearchResultProfilePic(searchResult[0], searchResult[1].isCompany, result))
+                            }, (error) => {});
+                            if (searchResult[1].isCompany) 
+                                searchResults = {
+                                    ...searchResults,
+                                    companies: {
+                                        ...searchResults.companies,
+                                        [searchResult[0]]: searchResult[1]
+                                    }
+                                };
+                            else 
+                                searchResults = {
+                                    ...searchResults,
+                                    users: {
+                                        ...searchResults.users,
+                                        [searchResult[0]]: searchResult[1]
+                                    }
+                                };
+                        }
+                    }
+                });
+                dispatch(addSearchResults(searchResults));
+                ready();
+            });
+    }
+}
+
+function getProfileImage(uid) {
+    return new Promise((resolve, reject) => {
+        storageRef
+            .child(`users/${uid}/profile-picture`)
+            .getDownloadURL()
+            .then((downloadURL) => {
                 let xhr = new XMLHttpRequest();
                 xhr.open('GET', downloadURL);
                 xhr.responseType = 'blob';
                 xhr.onload = () => {
                     const blob = xhr.response;
-                    const image = new File([blob], 'profile', {type: blob.type,lastModified: Date.now()});
+                    const image = new File([blob], 'profile', {
+                        type: blob.type,
+                        lastModified: Date.now()
+                    });
                     const reader = new FileReader();
-                    reader.onload = () =>  {
-                        dispatch(addProfileInfo({...values,profilePic: reader.result}));
-                        ready();
+                    reader.onload = () => {
+                        resolve(reader.result);
                     }
                     reader.readAsDataURL(image);
                 }
-                xhr.send();
-            },(error) => {
-                dispatch(removeProfilePicture())
-                dispatch(addProfileInfo({...values}));
-                ready();
-            });
-        });
-    }
-}
-
-export function startVacancyApply(companyId,vacancyId,userId){
-    return(dispatch,getState) => {
-        return query.fetchVacancyCandidates(companyId,vacancyId).then((snapshot)=>{
-            const data = snapshot.val();
-            if(data && userId in data)
-                return toast.error('Você já se candidatou à esta vaga.');
-            else 
-                return query.vacancyApply(companyId,vacancyId,userId).then(()=>{
-                    return toast.success('Candidatura cadastrada com sucesso!');
-                });
-        });
-    }
-}
-
-export function startSearch(searchCriteria,ready){
-    return(dispatch,getState) => {
-        var searchResults = {};
-        firebaseRef.child(`users`).once('value').then((snapshot) => {
-            Object
-            .entries(snapshot.val())
-            .forEach((searchResult) => {
-                delete searchResult[1].graduations;
-                delete searchResult[1].experiences;
-                
-                if(searchResult[0] !== getState().auth.user.uid){
-                    if(searchResult[1].isCompany){
-                        if(searchResult[1].name.toLowerCase().includes(searchCriteria.toLowerCase()))
-                            searchResults = {...searchResults,companies:{...searchResults.companies,[searchResult[0]]:searchResult[1]}};
-                    }
-                    else if(searchResult[1].firstName.toLowerCase().includes(searchCriteria.toLowerCase()))
-                        searchResults = {...searchResults,users:{...searchResults.users,[searchResult[0]]:searchResult[1]}};
+                xhr.onerror = () => {
+                    reject({text: 'Promise error'});
                 }
+                xhr.send();
+            }, (error) => {
+                reject({text: 'Firebase error'});
             });
-            dispatch(addSearchResults(searchResults));
-            ready();
-        });
-    }
+    });
 }
 
-export function addSearchResults(searchResults){
+export function addSearchResults(searchResults) {
     return {
         type: types.ADD_SEARCH_RESULTS,
-        payload: {...searchResults}
+        payload: {
+            ...searchResults
+        }
+    }
+}
+
+export function addSearchResultProfilePic(uid, isCompany, profilePic) {
+    return {
+        type: types.ADD_SEARCH_PROFILE_PIC,
+        payload: {
+            uid,
+            isCompany,
+            profilePic
+        }
     }
 }
 
@@ -101,19 +199,14 @@ export function editProfileInfo(userInfo) {
 }
 
 export function addProfilePicture(downloadURL) {
-    return {
-        type: types.ADD_PROFILE_PICTURE,
-        payload: downloadURL
-    }
+    return {type: types.ADD_PROFILE_PICTURE, payload: downloadURL}
 }
 
 export function removeProfilePicture() {
-    return {
-        type: types.REMOVE_PROFILE_PICTURE
-    }
+    return {type: types.REMOVE_PROFILE_PICTURE}
 }
 
-export function addExperience(experience,id) {
+export function addExperience(experience, id) {
     return {
         type: types.ADD_EXPERIENCE,
         payload: {
@@ -126,56 +219,60 @@ export function addExperience(experience,id) {
 export function startAddExperience(experience) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.saveExperience(experience,uid).then((result)=>{
-            dispatch(addExperience(experience, result.key));
-            toast.success("Experiência adicionada com sucesso.");
-        },(error)=>{
-            toast.error("Erro ao adicionar experiência.");
-        });
+        return query
+            .saveExperience(experience, uid)
+            .then((result) => {
+                dispatch(addExperience(experience, result.key));
+                toast.success("Experiência adicionada com sucesso.");
+            }, (error) => {
+                toast.error("Erro ao adicionar experiência.");
+            });
     }
 }
 
-export function startEditExperience(experience,id) {
+export function startEditExperience(experience, id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.editExperience(experience,uid,id).then((result)=>{
-            dispatch(addExperience(experience, id));
-            toast.success("Experiência editada com sucesso.");
-        },(error)=>{
-            toast.error("Erro ao editar experiência.");
-        });
+        return query
+            .editExperience(experience, uid, id)
+            .then((result) => {
+                dispatch(addExperience(experience, id));
+                toast.success("Experiência editada com sucesso.");
+            }, (error) => {
+                toast.error("Erro ao editar experiência.");
+            });
     }
 }
-
-
 
 export function startDeleteExperience(id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.deleteExperience(uid,id).then(()=>{
-            dispatch(removeExperience(id));
-            toast.success("Experiência excluída com sucesso.");
-        });
+        return query
+            .deleteExperience(uid, id)
+            .then(() => {
+                dispatch(removeExperience(id));
+                toast.success("Experiência excluída com sucesso.");
+            });
     }
 }
 
-
-export function removeExperience(id){
-    return {
-        type: types.DELETE_EXPERIENCE,
-        payload:{id}
-    }
+export function removeExperience(id) {
+    return {type: types.DELETE_EXPERIENCE, payload: {
+            id
+        }}
 }
 
 export function startAddVacancy(vacancy) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.saveVacancy(vacancy, uid).then((result) => {
-            dispatch(addVacancy(vacancy, result.key));
-            toast.success("Vaga adicionada com sucesso.");
-        }, (error) => {
-            toast.error("Erro ao adicionar vaga.");
-        });
+        return query
+            .saveVacancy(vacancy, uid)
+            .then((result) => {
+                dispatch(addVacancy(vacancy, result.key));
+                toast.success("Vaga adicionada com sucesso.");
+            }, (error) => {
+                toast.error("Erro ao adicionar vaga.");
+            });
     }
 }
 
@@ -189,25 +286,30 @@ export function addVacancy(vacancy, id) {
     };
 }
 
+
 export function startEditVacancy(vacancy, id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.editVacancy(vacancy, uid, id).then((result) => {
-            dispatch(addVacancy(vacancy, id));
-            toast.success("Vaga editada com sucesso.");
-        }, (error) => {
-            toast.error("Erro ao editar vaga.");
-        });
+        return query
+            .editVacancy(vacancy, uid, id)
+            .then((result) => {
+                dispatch(addVacancy(vacancy, id));
+                toast.success("Vaga editada com sucesso.");
+            }, (error) => {
+                toast.error("Erro ao editar vaga.");
+            });
     }
 }
 
 export function startDeleteVacancy(id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.deleteVacancy(uid, id).then(() => {
-            dispatch(removeVacancy(id));
-            toast.success("Vaga excluída com sucesso.");
-        });
+        return query
+            .deleteVacancy(uid, id)
+            .then(() => {
+                dispatch(removeVacancy(id));
+                toast.success("Vaga excluída com sucesso.");
+            });
     }
 }
 
@@ -232,8 +334,14 @@ export function startEditProfileInfo(userInfo) {
     return (dispatch, getState) => {
         const profilePic = userInfo.profilePic;
         delete userInfo.profilePic;
-        Object.keys(userInfo).forEach(key => userInfo[key] === undefined ? delete userInfo[key] : '');
-        return query.editProfile({...userInfo},getState().auth.user.uid).then((result) => {
+        Object
+            .keys(userInfo)
+            .forEach(key => userInfo[key] === undefined
+                ? delete userInfo[key]
+                : '');
+        return query.editProfile({
+            ...userInfo
+        }, getState().auth.user.uid).then((result) => {
             dispatch(editProfileInfo(userInfo));
             toast.success("Perfil editado com sucesso.");
             return dispatch(startUploadProfilePic(profilePic));
@@ -243,22 +351,32 @@ export function startEditProfileInfo(userInfo) {
 
 export function startUploadProfilePic(profilePic) {
     return (dispatch, getState) => {
-        if(profilePic) {
-            var upload = storageRef.child(`users/${getState().auth.user.uid}/profile-picture`).put(profilePic);
+        if (profilePic) {
+            var upload = storageRef
+                .child(`users/${getState().auth.user.uid}/profile-picture`)
+                .put(profilePic);
             return upload.on('state_changed', function (snapshot) {}, (error) => {}, function () {
-                return upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const image = new File([profilePic], 'profile', {type: profilePic.type,lastModified: Date.now()});
-                    const reader = new FileReader();
-                    reader.onload = () => dispatch(addProfilePicture(reader.result));
-                    reader.readAsDataURL(image);
-                });
+                return upload
+                    .snapshot
+                    .ref
+                    .getDownloadURL()
+                    .then((downloadURL) => {
+                        const image = new File([profilePic], 'profile', {
+                            type: profilePic.type,
+                            lastModified: Date.now()
+                        });
+                        const reader = new FileReader();
+                        reader.onload = () => dispatch(addProfilePicture(reader.result));
+                        reader.readAsDataURL(image);
+                    });
             });
         } else {
-            storageRef.child(`users/${getState().auth.user.uid}/profile-picture`).delete().then((result)=>{
-                dispatch(removeProfilePicture());
-            },(error)=>{
-
-            })
+            storageRef
+                .child(`users/${getState().auth.user.uid}/profile-picture`)
+                .delete()
+                .then((result) => {
+                    dispatch(removeProfilePicture());
+                }, (error) => {})
         }
     }
 }
@@ -276,40 +394,45 @@ export function addGraduation(graduation, id) {
 export function startAddGraduation(graduation) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.saveGraduation(graduation, uid).then((result) => {
-            dispatch(addGraduation(graduation, result.key));
-            toast.success("Formação adicionada com sucesso.");
-        },(error) => {
-            toast.error("Erro ao adicionar formação.")
-        });
+        return query
+            .saveGraduation(graduation, uid)
+            .then((result) => {
+                dispatch(addGraduation(graduation, result.key));
+                toast.success("Formação adicionada com sucesso.");
+            }, (error) => {
+                toast.error("Erro ao adicionar formação.")
+            });
     }
 }
 
 export function startEditGraduation(graduation, id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.editGraduation(graduation, uid, id).then(() => {
-            dispatch(addGraduation(graduation, id));
-            toast.success("Formação editada com sucesso.");
-        },(error) => {
-            toast.error("Erro ao editar formação.")
-        });
+        return query
+            .editGraduation(graduation, uid, id)
+            .then(() => {
+                dispatch(addGraduation(graduation, id));
+                toast.success("Formação editada com sucesso.");
+            }, (error) => {
+                toast.error("Erro ao editar formação.")
+            });
     }
 }
 
 export function startDeleteGraduation(id) {
     return (dispatch, getState) => {
         const uid = getState().auth.user.uid;
-        return query.deleteGraduation(uid, id).then(() => {
-            dispatch(removeGraduation(id));
-            toast.success("Formação excluída com sucesso.");
-        });
+        return query
+            .deleteGraduation(uid, id)
+            .then(() => {
+                dispatch(removeGraduation(id));
+                toast.success("Formação excluída com sucesso.");
+            });
     }
 }
 
-export function removeGraduation(id){
-    return {
-        type: types.DELETE_GRADUATION,
-        payload:{id}
-    }
+export function removeGraduation(id) {
+    return {type: types.DELETE_GRADUATION, payload: {
+            id
+        }}
 }

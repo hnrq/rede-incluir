@@ -6,6 +6,7 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {startLogout} from '../actions';
 import {authenticate} from '../firebase/auth';
+import Media from 'react-media';
 import queryString from 'query-string';
 
 class Header extends Component{
@@ -62,12 +63,15 @@ class Header extends Component{
             return(
                 <Nav style={{width:'100%'}}>
                 <Form.Row onSubmit={this.search}>
-                    <Col><Form.Control type="text" value={this.state.searchCriteria} className="mr-sm-2" onChange={this.handleSearchCriteria} placeholder="Search"/></Col>
-                    <Col md={4}><Button variant="primary" type="submit" onClick={this.search} className="mr-sm-2" block>Search</Button></Col>
+                    <Col xs={9} md={8}><Form.Control type="text" value={this.state.searchCriteria} className="mr-sm-2" onChange={this.handleSearchCriteria} placeholder="Search"/></Col>
+                    <Col xs={3} md={4} ><Button variant="primary" type="submit" onClick={this.search} className="mr-sm-2" block>Search</Button></Col>
                 </Form.Row>
-                    <Row className="ml-auto">
-                        <Col><Button variant="danger" onClick={this.logout} block>Logout</Button></Col>
-                    </Row>
+                    <hr className="header-divider"/>
+                    <Media query="(max-width: 991px)">
+                        {matches => <Row className={matches ? null : 'ml-auto'}>
+                            <Col xs={12}><Button variant="danger" onClick={this.logout} block>Logout</Button></Col>
+                        </Row>}
+                    </Media>
                 </Nav>
                 );
         else return(<Nav className="ml-auto"><Form inline onSubmit={this.login}>

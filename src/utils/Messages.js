@@ -4,7 +4,9 @@ export const getErrorMessage = (errorCode) => {
             return 'Senha inválida.';
         case 'auth/email-already-in-use':
             return 'Este e-mail já está em uso.'
+        case 'auth/user-not-found':
+            return 'Este e-mail não está cadastrado.'
         default:
-            return 'Meems';
+            return 'Erro.';
     }
 }

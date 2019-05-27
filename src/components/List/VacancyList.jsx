@@ -25,7 +25,8 @@ export default class ExperienceList extends Component {
             type,
             items,
             showItemAction,
-            buttonText
+            buttonText,
+            onClick
         } = this.props;
         return (
             <div className="list">
@@ -48,6 +49,7 @@ export default class ExperienceList extends Component {
                         extraInfo={item[1].desc}
                         collapsible
                         buttonText={buttonText}
+                        onClick={onClick ? () => onClick(item[1]) : null}
                         id={item[0]}
                         showItemAction={showItemAction}
                         action={() => buttonText

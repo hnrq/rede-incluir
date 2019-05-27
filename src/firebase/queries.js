@@ -18,7 +18,12 @@ export const deleteExperience = (uid, experienceId) => firebaseRef
 
 export const saveInfo = (account, uid, isCompany) => firebaseRef
     .child(`users/${uid}`)
-    .set(isCompany ? {...account,isCompany} : account);
+    .set(isCompany
+        ? {
+            ...account,
+            isCompany
+        }
+        : account);
 
 export const saveGraduation = (graduation, uid) => firebaseRef
     .child(`users/${uid}/graduations`)
@@ -44,8 +49,18 @@ export const deleteVacancy = (uid, vacancyId) => firebaseRef
     .child(`users/${uid}/vacancies/${vacancyId}`)
     .remove();
 
-export const fetchVacancyCandidates = (companyId,vacancyId) => firebaseRef
-    .child(`users/${companyId}/vacancies/${vacancyId}/candidates`).once('value');
+export const fetchVacancyCandidates = (companyId, vacancyId) => firebaseRef
+    .child(`users/${companyId}/vacancies/${vacancyId}/candidates`)
+    .once('value');
 
-export const vacancyApply = (companyId,vacancyId,userId) => firebaseRef
-    .child(`users/${companyId}/vacancies/${vacancyId}/candidates/${userId}`).set(true);
+export const fetchUsers = () => firebaseRef
+    .child(`users`)
+    .once('value');
+
+export const fetchUser = (uid) => firebaseRef
+    .child(`users/${uid}`)
+    .once('value');
+
+export const vacancyApply = (companyId, vacancyId, userId) => firebaseRef
+    .child(`users/${companyId}/vacancies/${vacancyId}/candidates/${userId}`)
+    .set(true);

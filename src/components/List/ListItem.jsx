@@ -16,7 +16,7 @@ export default class ListItem extends Component {
         const {showItemAction, buttonText,action} = this.props;
         if (showItemAction) {
             return (buttonText
-                ? <Button className="list-item-action" style={{top:'-10px',right:'20px'}} onClick= {!!action ? () => {action()} : null}>{buttonText}</Button>
+                ? <Button className="list-item-action" style={{right:'20px'}} onClick= {!!action ? () => {action()} : null}>{buttonText}</Button>
                 : <i
                     className="btn icon-button list-item-action"
                     onClick=
@@ -33,12 +33,13 @@ export default class ListItem extends Component {
             extraInfo,
             picture,
             to,
-            collapsible
+            collapsible,
+            onClick
         } = this.props;
-        const item = <div className="list-item">
+        const item = <div className={`list-item`}>
             <div style={{
                 display: 'flex'
-            }}>
+            }} className={`content ${onClick ? 'clickable' : ''}`} onClick={onClick ?  () => onClick() : null}>
                 <img alt="item-pic" src={picture} className="avatar small list-item-pic"/>
                 <div className="list-info">
                     <h5>{title}</h5>

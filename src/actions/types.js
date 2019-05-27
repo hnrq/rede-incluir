@@ -11,3 +11,5 @@ export const ADD_SEARCH_RESULTS = 10;
 export const ADD_JOB_OPPORTUNITY = 11;
 export const DELETE_JOB_OPPORTUNITY = 12;
 export const EDIT_PROFILE_INFO = 13;
+export const ADD_SEARCH_PROFILE_PIC = 14;
+export const ADD_VACANCY_CANDIDATES = 15;

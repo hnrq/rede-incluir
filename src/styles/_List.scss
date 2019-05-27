@@ -1,7 +1,6 @@
 .list-item {
     display: block;
     position: relative;
-
     & .list-item-pic {
         margin-left: 20px;
     }
@@ -53,6 +52,20 @@
 
     & hr {
         margin-top: 10px;
+        margin-bottom:0px;
+    }
+
+    & .content {
+        padding: 10px 0px;
+    }
+
+    & .clickable {
+        transition: .3s all;
+
+        &:hover {
+            background: #EEE;
+            cursor: pointer;
+        }
     }
 }
 
@@ -67,7 +80,7 @@
     & .list-title {
         margin-left: 20px;
         margin-top: 10px;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
     }
 
     & .icon-button {

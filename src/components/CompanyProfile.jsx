@@ -3,11 +3,14 @@ import {withRouter} from 'react-router-dom';
 import {Container,Button,Modal} from 'react-bootstrap';
 import placeholder from '../images/ppic-placeholder.png';
 import backgroundPlaceholder from '../images/background-placeholder.png';
+import {getVacancyCandidates} from '../actions';
 import VacancyForm from './forms/VacancyForm';
 import EditCompanyForm from './forms/EditCompanyForm';
+import ApplicantsList from './List/ApplicantsList';
 import VacancyList from './List/VacancyList';
 import ReactPlaceholder from 'react-placeholder';
 import {disabilities} from '../utils/Disabilities';
+import {connect} from 'react-redux';
 
 class CompanyProfile extends Component {
     constructor(props){
@@ -16,6 +19,8 @@ class CompanyProfile extends Component {
             showVacancyModal:false,
             showProfileModal:false,
             showApplyModal:false,
+            showCandidatesModal:false,
+            vacancy:null
         }
     }
 
@@ -25,6 +30,14 @@ class CompanyProfile extends Component {
 
     handleShowApplyModal = (vacancyId,vacancyTitle) => {
         this.setState({showApplyModal: true,vacancyTitle,vacancyId});
+    }
+    handleCloseCandidatesModal = () => {
+        this.setState({showCandidatesModal: false});
+    }
+
+    handleShowCandidatesModal = (vacancy) => {
+        this.props.getVacancyCandidates(vacancy.candidates);
+        this.setState({showCandidatesModal: true, vacancyTitle: vacancy.post});
     }
 
     handleShowVacancyModal = () => {
@@ -74,6 +87,7 @@ class CompanyProfile extends Component {
                     showItemAction={showItemAction} 
                     title={"Vagas ofertadas"}  
                     items={this.props.vacancies} 
+                    onClick={showListAction ? this.handleShowCandidatesModal : undefined}
                     listAction={showListAction ? this.addVacancy : null} 
 listItemAction = {
     showItemAction
@@ -121,7 +135,7 @@ listItemAction = {
                                 {userDisabilities}
                             </div>
                         </ReactPlaceholder>
-                        {editable && ready ? <Button className="edit-profile" onClick={this.handleShowProfileModal}>Editar Perfil</Button> : null}
+                        {editable && ready ? <div className="right-btn-group"><Button className="edit-profile" onClick={this.handleShowProfileModal}>Editar Perfil</Button></div> : null}
                         <hr/>
                         <div className="desc" style={{textAlign:'justify'}}>
                             <ReactPlaceholder type='text' rows={8} showLoadingAnimation={true} ready={ready} style={{height:200}}>
@@ -136,6 +150,14 @@ listItemAction = {
             </Modal>
             <Modal size="lg" show={this.state.showProfileModal} onHide={this.handleCloseProfileModal}>
                 <EditCompanyForm initialValues={this.state.initialValues} closeModal={this.handleCloseProfileModal}/>
+            </Modal>
+            <Modal size="lg" show={this.state.showCandidatesModal} onHide={this.handleCloseCandidatesModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Candidatos à vaga de {this.state.vacancyTitle}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ApplicantsList items={this.props.vacancyCandidates}/>
+                </Modal.Body>
             </Modal>
             <Modal centered className="modal-small" size="sm" show={this.state.showApplyModal} onHide={this.handleCloseApplyModal}>
                 <Modal.Header closeButton>
@@ -155,4 +177,11 @@ listItemAction = {
     }
 }
 
-export default withRouter(CompanyProfile);
+const mapStateToProps = (state) => ({vacancyCandidates:state.vacancyCandidates
+});
+
+const mapDispatchToProps = (dispatch,ownProps) => ({
+    getVacancyCandidates: (candidatesId) => dispatch(getVacancyCandidates(candidatesId))
+});
+
+export default withRouter(connect(mapStateToProps,mapDispatchToProps)(CompanyProfile));
