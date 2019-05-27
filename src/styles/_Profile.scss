@@ -31,8 +31,13 @@
         text-align: center;
     }
 
-    & .edit-profile {
+    & .right-btn-group {
         position: absolute;
+        display: flex;
+        flex-wrap: wrap;
+        height: 85px;
+        justify-content: space-between;
+        flex-direction: column;
         top: 3vh;
         right: 25px;
     }
@@ -47,11 +52,11 @@
     }
 }
 
-@media(max-width:480px) {
+@media(max-width:800px) {
     .profile {
         text-align: center;
 
-        .edit-profile {
+        .right-btn-group {
             position: initial;
         }
 
