@@ -2,7 +2,7 @@ import React,{Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Container,Button,Modal} from 'react-bootstrap';
 import placeholder from '../images/ppic-placeholder.png';
-import backgroundPlaceholder from '../images/background-placeholder.png';
+import backgroundPlaceholder from '../images/background-placeholder.jpeg';
 import ExperienceForm from './forms/ExperienceForm';
 import EditUserForm from './forms/EditUserForm';
 import ExperienceList from './List/ExperienceList';
@@ -112,12 +112,12 @@ class UserProfile extends Component{
         const {profilePic,backgroundPic,firstName,lastName,workLocation,occupation,desc,ready,cid10} = this.props;
         let userDisabilities;
         if(this.props.disabilities)
-            userDisabilities = disabilities.filter((disability) => this.props.disabilities.includes(disability.value)).map((disability,index) => <i className="disability" key={index}>{disability.label}</i>);
+            userDisabilities = disabilities.filter((disability) => this.props.disabilities.includes(disability.value))
         const editable = this.props.location.pathname.substr(1) === this.props.uid;
         return(
             <>
             <ReactPlaceholder type='rect' style={{width:'100%',height: '250px'}} showLoadingAnimation={true} ready={ready}>
-                <div className="background-pic" style={{background:`url(${backgroundPic ? backgroundPic : backgroundPlaceholder})`,backgroundPosition:'center'}}></div>
+                <div className="background-pic" style={{background:`url(${backgroundPic ? backgroundPic : backgroundPlaceholder})`,backgroundPosition:'center',backgroundRepeat:'repeat-x'}}></div>
             </ReactPlaceholder>
             <Container className="card profile">
                     <div className="avatar">
@@ -139,7 +139,7 @@ class UserProfile extends Component{
                         </ReactPlaceholder>
                         <ReactPlaceholder type='text' rows={3} showLoadingAnimation={true} ready={ready} style={{width:170,height:30}}>
                             <div className="disabilities">
-                                {userDisabilities}
+                                {userDisabilities ? userDisabilities.map((disability,index) => <i className="disability" key={index}>{disability.label}</i>) : null}
                                 {cid10 ? <i className="disability">CID10: {cid10}</i> : null}
                             </div>
                         </ReactPlaceholder>
@@ -171,7 +171,7 @@ class UserProfile extends Component{
                 <Modal.Header closeButton>
                     <Modal.Title>Curriculo em PDF</Modal.Title>
                 </Modal.Header>
-                <CurriculumPDF {...this.props}/>
+                <CurriculumPDF {...this.props} userDisabilities={userDisabilities}/>
             </Modal>
             </>
             

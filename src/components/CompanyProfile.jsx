@@ -2,12 +2,13 @@ import React,{Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import {Container,Button,Modal} from 'react-bootstrap';
 import placeholder from '../images/ppic-placeholder.png';
-import backgroundPlaceholder from '../images/background-placeholder.png';
+import backgroundPlaceholder from '../images/background-placeholder.jpeg';
 import {getVacancyCandidates} from '../actions';
 import VacancyForm from './forms/VacancyForm';
 import EditCompanyForm from './forms/EditCompanyForm';
 import ApplicantsList from './List/ApplicantsList';
 import VacancyList from './List/VacancyList';
+import {toast} from 'react-toastify';
 import ReactPlaceholder from 'react-placeholder';
 import {disabilities} from '../utils/Disabilities';
 import {connect} from 'react-redux';
@@ -88,15 +89,15 @@ class CompanyProfile extends Component {
                     title={"Vagas ofertadas"}  
                     items={this.props.vacancies} 
                     onClick={showListAction ? this.handleShowCandidatesModal : undefined}
-                    listAction={showListAction ? this.addVacancy : null} 
-listItemAction = {
-    showItemAction
-        ? isCompany
-            ? this.editVacancy
-            : this.handleShowApplyModal : null
-}
-                    buttonText={isCompany ? null : "Candidatar"}/>
-                </Container>
+                    listAction={showListAction ? this.addVacancy : null}
+                    listItemAction = {
+                        showItemAction
+                            ? isCompany
+                                ? this.editVacancy
+                                : this.handleShowApplyModal : null
+                    }
+                                        buttonText={isCompany ? null : "Candidatar"}/>
+                                    </Container>
             )
         }
     }
@@ -110,7 +111,7 @@ listItemAction = {
         return(
             <>
             <ReactPlaceholder type='rect' style={{width:'100%',height: '250px'}} showLoadingAnimation={true} ready={ready}>
-                <div className="background-pic" style={{background:`url(${backgroundPic ? backgroundPic : backgroundPlaceholder})`,backgroundPosition:'center'}}></div>
+                <div className="background-pic" style={{background:`url(${backgroundPic ? backgroundPic : backgroundPlaceholder})`,backgroundPosition:'center',backgroundRepeat:'repeat-x'}}></div>
             </ReactPlaceholder>
             <Container className="card profile">
                     <div className="avatar">
@@ -167,7 +168,7 @@ listItemAction = {
                     <p>Deseja se candidatar à vaga de {this.state.vacancyTitle}?</p>
                 </Modal.Body>
                 <Modal.Footer className="footer-button">
-                    <Button variant="outline-secondary"  onClick={this.handleCloseApplyModal}>Não</Button>
+                    <Button variant="outline-secondary"  onClick={() => {this.handleCloseApplyModal(); toast.error('Candidatura cancelada.')}}>Não</Button>
                     <Button variant="primary" onClick={this.vacancyApply}>Candidatar</Button>
                 </Modal.Footer>
             </Modal>
