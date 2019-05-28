@@ -7,6 +7,7 @@ export default class Applicants extends Component {
 
     render() {
         const {title, type, items} = this.props;
+        console.log(items);
         return (
             <div className="list">
                 <Row>
@@ -27,7 +28,7 @@ export default class Applicants extends Component {
                             id={item[0]}
                             type={type}/>
                         )
-                    : <i>Ninguém se candidatou à esta vaga ainda.</i>}
+                    : <i>Não há candidatos para esta vaga.</i>}
             </div>
         )
     }

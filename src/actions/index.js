@@ -68,23 +68,25 @@ export function startVacancyApply(companyId, vacancyId, userId) {
 export function getVacancyCandidates(userIds) {
     return (dispatch, getState) => {
         var result;
-        const ids = Object.entries(userIds);
-        ids.forEach((user,index) => {
-            query.fetchUser(user[0]).then((snapshot) => {
-                result = {...result,[user[0]]:snapshot.val()}
-                if(index === ids.length-1){
-                    dispatch(addVacancyApplicants(result));
-                }
-            })
-        });
-        
+        if(!userIds) dispatch(addVacancyApplicants(null));
+        else{
+            const ids = Object.entries(userIds);
+            ids.forEach((user,index) => {
+                query.fetchUser(user[0]).then((snapshot) => {
+                    result = {...result,[user[0]]:snapshot.val()}
+                    if(index === ids.length-1){
+                        dispatch(addVacancyApplicants(result));
+                    }
+                })
+            });
+        }
     }
 }
 
 export function addVacancyApplicants(applicants) {
     return {
         type: types.ADD_VACANCY_CANDIDATES,
-        payload: {...applicants}
+        payload: applicants
     };
 }
 
