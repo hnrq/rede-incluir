@@ -3,7 +3,6 @@ import {Field, reduxForm, formValueSelector} from 'redux-form';
 import {Form, Button, Row, Col, Modal} from 'react-bootstrap';
 import {startAddVacancy, startEditVacancy, startDeleteVacancy} from '../../actions';
 import {connect} from 'react-redux';
-import {disabilities} from '../../utils/Disabilities';
 import InputField from '../custom-bootstrap/InputField';
 import {createNumberMask} from 'redux-form-input-masks';
 
@@ -67,10 +66,10 @@ class Vacancy extends Component {
                         <Col>
                             <Field
                                 name="workLoad"
-                                type='text'
+                                type='number'
                                 component={InputField}
-                                label={"Carga horária"}
-                                placeholder={"Ex: 8 horas"}/>
+                                label={"Carga horária semanal (Em horas)"}
+                                placeholder={"Ex: 8"}/>
                         </Col>
                         <Col>
                             <Field
@@ -80,19 +79,6 @@ class Vacancy extends Component {
                                 label={"Remuneração"}
                                 placeholder={"Ex.: R$ 2500,00"}
                                 {...currencyMask}/>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <Field
-                                style={{marginBottom: 5}}
-                                name="disabilities"
-                                closeMenuOnSelect={false}
-                                type='select-multiple'
-                                component={InputField}
-                                placeholder="Selecione (se houver) limitação para deficiências"
-                                options={disabilities}
-                                label="Deficiências"/>
                         </Col>
                     </Row>
                     <Row>
