@@ -66,10 +66,17 @@ class Vacancy extends Component {
                         <Col>
                             <Field
                                 name="workLoad"
-                                type='number'
+                                type='text'
                                 component={InputField}
+                                normalize={(val, prevVal) => {
+                                    if (val) {
+                                        return (/^\d+$/.test(val)) ? val : prevVal
+                                    }
+                                    return val;
+                                    }}
+                                inputmode="numeric"
                                 label={"Carga horária semanal (Em horas)"}
-                                placeholder={"Ex: 8"}/>
+                                placeholder={"Ex: 40"}/>
                         </Col>
                         <Col>
                             <Field

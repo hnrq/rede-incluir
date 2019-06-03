@@ -5,7 +5,7 @@ export const disabilities = [
     },
     {
         value: 1,
-        label: 'Baixa visão'
+        label: 'Deficiência visual'
     },
     {
         value: 2,
@@ -13,7 +13,7 @@ export const disabilities = [
     },
     {
         value: 3,
-        label: 'Surdez parcial'
+        label: 'Deficiência auditiva'
     },
     {
         value: 4,

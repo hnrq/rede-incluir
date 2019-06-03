@@ -44,7 +44,7 @@ export default class ExperienceList extends Component {
                     .map((item) => <ListItem
                         title={item[1].post}
                         key={item[0]}
-                        subtitle={`R$ ${formatMoney(item[1].salary)} • ${item[1].workLoad}`}
+                        subtitle={`R$ ${formatMoney(item[1].salary)} • ${item[1].workLoad} horas`}
                         picture="https://upload.wikimedia.org/wikipedia/commons/5/50/Business_Suitcase_Flat_Icon.svg"
                         extraInfo={item[1].desc}
                         collapsible
