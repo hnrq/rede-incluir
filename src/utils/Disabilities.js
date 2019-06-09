@@ -22,5 +22,9 @@ export const disabilities = [
     {
         value: 5,
         label: 'Deficiência física'
+    },
+    {
+        value: 6,
+        label: 'Beneficiário INSS'
     }
 ]
