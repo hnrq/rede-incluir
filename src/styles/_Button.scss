@@ -1,0 +1,14 @@
+.icon-button {
+    cursor: pointer;
+
+    &:focus {
+        box-shadow: none;
+        outline: none;
+    }
+}
+
+.footer-button {
+    width: 100%;
+    justify-content: space-between;
+    display: flex;
+}

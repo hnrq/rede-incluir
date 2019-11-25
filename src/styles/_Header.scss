@@ -1,0 +1,10 @@
+.header-divider {
+    display: none;
+    width: 100%;
+}
+
+@media(max-width: 991px) {
+    .header-divider {
+        display: block;
+    }
+}

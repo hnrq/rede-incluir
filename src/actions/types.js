@@ -1,0 +1,15 @@
+export const LOGIN = 1;
+export const LOGOUT = 2;
+export const ADD_PROFILE_INFO = 3;
+export const ADD_EXPERIENCE = 4;
+export const ADD_PROFILE_PICTURE = 5;
+export const ADD_GRADUATION = 6;
+export const DELETE_EXPERIENCE = 7;
+export const DELETE_GRADUATION = 8;
+export const REMOVE_PROFILE_PICTURE = 9;
+export const ADD_SEARCH_RESULTS = 10;
+export const ADD_JOB_OPPORTUNITY = 11;
+export const DELETE_JOB_OPPORTUNITY = 12;
+export const EDIT_PROFILE_INFO = 13;
+export const ADD_SEARCH_PROFILE_PIC = 14;
+export const ADD_VACANCY_CANDIDATES = 15;
